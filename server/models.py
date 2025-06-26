@@ -25,3 +25,15 @@ class Event(db.Model, SerializerMixin):
     users = db.relationship('UserEvent', backref='event', lazy=True)
 
     serialize_rules = ('-reviews.event', '-users.event')
+
+
+class Review(db.Model, SerializerMixin):
+    __tablename__ = 'reviews'
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.String(500), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    event_id = db.Column(db.Integer, db.ForeignKey(
+        'events.id'), nullable=False)
+
+    serialize_rules = ('-user.reviews', '-event.reviews')

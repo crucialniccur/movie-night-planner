@@ -79,5 +79,26 @@ class UserList(Resource):
             return {'error': str(e)}, 400
 
 
+class ReviewList(Resource):
+    def get(self):
+        reviews = [review.to_dict() for review in Review.query.all()]
+        return reviews, 200
+
+    def post(self):
+        data = request.get_json()
+        try:
+            review = Review(
+                content=data['content'],
+                rating=data['rating'],
+                user_id=data['user_id'],
+                event_id=data['event_id']
+            )
+            db.session.add(review)
+            db.session.commit()
+            return review.to_dict(), 201
+        except ValueError as e:
+            return {'error': str(e)}, 400
+
+
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

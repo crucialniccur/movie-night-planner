@@ -1,8 +1,21 @@
-import React, { useEffect, useState } from "react";
-import { Switch, Route } from "react-router-dom";
+import React from "react";
+import NavBar from "./NavBar";
+import MovieList from "./MovieList";
+import ReviewForm from "./ReviewForm";
+import Home from "./Home";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
-  return <h1>Project Client</h1>;
+  return (
+    <Router>
+      <NavBar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/movies" element={<MovieList />} />
+        <Route path="/reviews" element={<ReviewForm />} />
+      </Routes>
+    </Router>
+  );
 }
 
 export default App;

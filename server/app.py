@@ -38,5 +38,30 @@ class EventList(Resource):
             return {'error': str(e)}, 400
 
 
+class EventByID(Resource):
+    def get(self, id):
+        event = Event.query.get_or_404(id)
+        return event.to_dict(), 200
+
+    def patch(self, id):
+        event = Event.query.get_or_404(id)
+        data = request.get_json()
+        try:
+            for key, value in data.items():
+                if key == 'date':
+                    value = datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
+                setattr(event, key, value)
+            db.session.commit()
+            return event.to_dict(), 200
+        except ValueError as e:
+            return {'error': str(e)}, 400
+
+    def delete(self, id):
+        event = Event.query.get_or_404(id)
+        db.session.delete(event)
+        db.session.commit()
+        return {'message': 'Event deleted'}, 200
+
+
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

@@ -37,3 +37,15 @@ class Review(db.Model, SerializerMixin):
         'events.id'), nullable=False)
 
     serialize_rules = ('-user.reviews', '-event.reviews')
+
+
+class UserEvent(db.Model, SerializerMixin):
+    __tablename__ = 'user_events'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    event_id = db.Column(db.Integer, db.ForeignKey(
+        'events.id'), nullable=False)
+    # User-submittable, e.g., 'host' or 'guest'
+    role = db.Column(db.String(20), nullable=False)
+
+    serialize_rules = ('-user.events', '-event.users')

@@ -121,5 +121,12 @@ class UserEventList(Resource):
             return {'error': str(e)}, 400
 
 
+api.add_resource(EventList, '/events')
+api.add_resource(EventByID, '/events/<int:id>')
+api.add_resource(UserList, '/users')
+api.add_resource(ReviewList, '/reviews')
+api.add_resource(UserEventList, '/user_events')
+
+
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

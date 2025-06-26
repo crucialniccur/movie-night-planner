@@ -17,7 +17,7 @@ from models import User, Event, Review, UserEvent
 
 @app.route('/')
 def index():
-    return '<h1>Project Server</h1>'
+    return '<h1>Movie night Planner Innit</h1>'
 
 
 class EventList(Resource):

@@ -12,11 +12,10 @@ if __name__ == '__main__':
         db.drop_all()
         db.create_all()
 
-        users = []
-        for _ in range(5):
-            user = User(username=fake.unique.user_name())
-            user.set_password('password123')  # Default password for testing
-            users.append(user)
+        # Use known usernames
+        users = [User(username=name) for name in ["alice", "bob", "charlie"]]
+        for user in users:
+            user.set_password('password123')
         db.session.add_all(users)
 
         events = [Event(

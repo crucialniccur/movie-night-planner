@@ -63,5 +63,21 @@ class EventByID(Resource):
         return {'message': 'Event deleted'}, 200
 
 
+class UserList(Resource):
+    def get(self):
+        users = [user.to_dict() for user in User.query.all()]
+        return users, 200
+
+    def post(self):
+        data = request.get_json()
+        try:
+            user = User(username=data['username'])
+            db.session.add(user)
+            db.session.commit()
+            return user.to_dict(), 201
+        except ValueError as e:
+            return {'error': str(e)}, 400
+
+
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

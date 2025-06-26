@@ -22,7 +22,8 @@ def index():
 
 class EventList(Resource):
     def get(self):
-        events = [event.to_dict() for event in Event.query.all()]
+        events = [event.to_dict(only=('id', 'title', 'date'))
+                  for event in Event.query.all()]
         return events, 200
 
     def post(self):
@@ -34,7 +35,7 @@ class EventList(Resource):
             )
             db.session.add(event)
             db.session.commit()
-            return event.to_dict(), 201
+            return event.to_dict(only=('id', 'title', 'date')), 201
         except ValueError as e:
             return {'error': str(e)}, 400
 
@@ -42,7 +43,7 @@ class EventList(Resource):
 class EventByID(Resource):
     def get(self, id):
         event = Event.query.get_or_404(id)
-        return event.to_dict(), 200
+        return event.to_dict(only=('id', 'title', 'date')), 200
 
     def patch(self, id):
         event = Event.query.get_or_404(id)
@@ -53,7 +54,7 @@ class EventByID(Resource):
                     value = datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
                 setattr(event, key, value)
             db.session.commit()
-            return event.to_dict(), 200
+            return event.to_dict(only=('id', 'title', 'date')), 200
         except ValueError as e:
             return {'error': str(e)}, 400
 
@@ -66,7 +67,8 @@ class EventByID(Resource):
 
 class UserList(Resource):
     def get(self):
-        users = [user.to_dict() for user in User.query.all()]
+        users = [user.to_dict(only=('id', 'username'))
+                 for user in User.query.all()]
         return users, 200
 
     def post(self):
@@ -75,14 +77,15 @@ class UserList(Resource):
             user = User(username=data['username'])
             db.session.add(user)
             db.session.commit()
-            return user.to_dict(), 201
+            return user.to_dict(only=('id', 'username')), 201
         except ValueError as e:
             return {'error': str(e)}, 400
 
 
 class ReviewList(Resource):
     def get(self):
-        reviews = [review.to_dict() for review in Review.query.all()]
+        reviews = [review.to_dict(only=(
+            'id', 'content', 'rating', 'user_id', 'event_id')) for review in Review.query.all()]
         return reviews, 200
 
     def post(self):
@@ -96,14 +99,15 @@ class ReviewList(Resource):
             )
             db.session.add(review)
             db.session.commit()
-            return review.to_dict(), 201
+            return review.to_dict(only=('id', 'content', 'rating', 'user_id', 'event_id')), 201
         except ValueError as e:
             return {'error': str(e)}, 400
 
 
 class UserEventList(Resource):
     def get(self):
-        user_events = [ue.to_dict() for ue in UserEvent.query.all()]
+        user_events = [ue.to_dict(
+            only=('id', 'user_id', 'event_id', 'role')) for ue in UserEvent.query.all()]
         return user_events, 200
 
     def post(self):
@@ -116,7 +120,7 @@ class UserEventList(Resource):
             )
             db.session.add(user_event)
             db.session.commit()
-            return user_event.to_dict(), 201
+            return user_event.to_dict(only=('id', 'user_id', 'event_id', 'role')), 201
         except ValueError as e:
             return {'error': str(e)}, 400
 

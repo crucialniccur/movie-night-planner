@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ErrorPage from "./ErrorPage";
 
 function Login() {
   const [username, setUsername] = useState("");
@@ -30,7 +31,7 @@ function Login() {
   return (
     <div>
       <h1>Login</h1>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {error && <ErrorPage>{error}</ErrorPage>}
       <form onSubmit={handleSubmit}>
         <div>
           <label>Username</label>

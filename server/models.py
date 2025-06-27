@@ -1,10 +1,5 @@
 from sqlalchemy_serializer import SerializerMixin
-from sqlalchemy.ext.associationproxy import association_proxy
-
 from config import db, bcrypt
-
-# Models go here!
-
 
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
@@ -13,16 +8,13 @@ class User(db.Model, SerializerMixin):
     __password = db.Column(db.String(128), nullable=False)
     reviews = db.relationship('Review', backref='user', lazy=True)
     events = db.relationship('UserEvent', backref='user', lazy=True)
-
     serialize_rules = ('-reviews.user', '-events.user', '-__password')
 
     def set_password(self, password):
-        self.__password = bcrypt.generate_password_hash(
-            password).decode('utf-8')
+        self.__password = bcrypt.generate_password_hash(password).decode('utf-8')
 
     def check_password(self, password):
         return bcrypt.check_password_hash(self.__password, password)
-
 
 class Event(db.Model, SerializerMixin):
     __tablename__ = 'events'
@@ -34,23 +26,19 @@ class Event(db.Model, SerializerMixin):
     users = db.relationship('UserEvent', backref='event', lazy=True)
     serialize_rules = ('-reviews.event', '-users.event')
 
-
 class Review(db.Model, SerializerMixin):
     __tablename__ = 'reviews'
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(500), nullable=False)
     rating = db.Column(db.Integer, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    event_id = db.Column(db.Integer, db.ForeignKey(
-        'events.id'), nullable=False)
+    event_id = db.Column(db.Integer, db.ForeignKey('events.id'), nullable=False)
     serialize_rules = ('-user.reviews', '-event.reviews')
-
 
 class UserEvent(db.Model, SerializerMixin):
     __tablename__ = 'user_events'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    event_id = db.Column(db.Integer, db.ForeignKey(
-        'events.id'), nullable=False)
+    event_id = db.Column(db.Integer, db.ForeignKey('events.id'), nullable=False)
     role = db.Column(db.String(20), nullable=False)
     serialize_rules = ('-user.events', '-event.users')

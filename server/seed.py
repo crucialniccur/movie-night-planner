@@ -12,27 +12,31 @@ if __name__ == '__main__':
         db.drop_all()
         db.create_all()
 
-        # Use known usernames
+        # Create users
         users = [User(username=name) for name in ["alice", "bob", "charlie"]]
         for user in users:
             user.set_password('password123')
         db.session.add_all(users)
+        db.session.commit()  # Commit so users get IDs
 
-        # Sample image URLs (e.g., from TMDB or placeholders)
+        # Sample image URLs for events
         image_urls = [
-            'https://image.tmdb.org/t/p/w500/8cdWjvZNUix8Z86vR7l8Qqr2HYT.jpg',  # Example: Dune
-            'https://image.tmdb.org/t/p/w500/9yBVqNruk6Ykrwc32qrK2TIE5xw.jpg',  # Example: No Time to Die
-            'https://image.tmdb.org/t/p/w500/kb4s0ML0iVZlG6wAKbbs9NAm6X.jpg'   # Example: Spider-Man
+            'https://image.tmdb.org/t/p/w500/8cdWjvZNUix8Z86vR7l8Qqr2HYT.jpg',  # Dune
+            'https://image.tmdb.org/t/p/w500/9yBVqNruk6Ykrwc32qrK2TIE5xw.jpg',  # No Time to Die
+            'https://image.tmdb.org/t/p/w500/kb4s0ML0iVZlG6wAKbbs9NAm6X.jpg'   # Spider-Man
         ]
 
-        events = [Event(
-            title=f"Movie Night: {fake.catch_phrase()}",
-            date=fake.date_time_between(start_date="now", end_date="+30d"),
-            image_url=image_urls[i % len(image_urls)]  # Cycle through URLs
-        ) for i in range(3)]
+        # Create events
+        events = [
+            Event(
+                title=f"Movie Night: {fake.catch_phrase()}",
+                date=fake.date_time_between(start_date="now", end_date="+30d"),
+                image_url=image_urls[i % len(image_urls)]
+            )
+            for i in range(3)
+        ]
         db.session.add_all(events)
-
-        db.session.commit()
+        db.session.commit()  # Commit so events get IDs
 
         reviews = [Review(
             content=fake.sentence(nb_words=10),

@@ -9,8 +9,7 @@ class User(db.Model, SerializerMixin):
     __password = db.Column(db.String(128), nullable=False)
     reviews = db.relationship('Review', backref='user', lazy=True)
     events = db.relationship('UserEvent', backref='user', lazy=True)
-    movies = db.relationship(
-        'UserMovie', backref='user_favorite', lazy=True)  # Unique backref
+    movies = db.relationship('UserMovie', backref='user_favorite', lazy=True)
     serialize_rules = ('-reviews.user', '-events.user',
                        '-movies.user', '-__password')
 
@@ -28,18 +27,19 @@ class Event(db.Model, SerializerMixin):
     title = db.Column(db.String(100), nullable=False)
     date = db.Column(db.DateTime, nullable=False)
     image_url = db.Column(db.String(255))
-    reviews = db.relationship('Review', backref='event', lazy=True)
     users = db.relationship('UserEvent', backref='event', lazy=True)
-    serialize_rules = ('-reviews.event', '-users.event')
+    serialize_rules = ('-users.event')
 
 
 class Review(db.Model, SerializerMixin):
     __tablename__ = 'reviews'
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(500), nullable=False)
-    rating = db.Column(db.Integer, nullable=False, check='rating >= 1 AND rating <= 5')
+    rating = db.Column(db.Integer, nullable=False,
+                       check='rating >= 1 AND rating <= 5')
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    movie_id = db.Column(db.Integer, nullable=False)  # Changed from event_id to movie_id
+    # Ensure this is the primary relationship
+    movie_id = db.Column(db.Integer, nullable=False)
     serialize_rules = ('-user.reviews',)
 
 
@@ -57,7 +57,7 @@ class UserMovie(db.Model, SerializerMixin):
     __tablename__ = 'user_movies'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    movie_id = db.Column(db.Integer, nullable=False)  # TMDB movie ID
+    movie_id = db.Column(db.Integer, nullable=False)
     favorite_date = db.Column(
         db.DateTime, nullable=False, default=db.func.now())
-    serialize_rules = ('-user.user_movies',)
+    serialize_rules = ('-user.user_movies')

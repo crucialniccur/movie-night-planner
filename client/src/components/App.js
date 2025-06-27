@@ -6,6 +6,10 @@ import Login from "./Login";
 import Logout from "./Logout";
 import Favorites from "./Favorites";
 
+function ErrorPage({ children }) {
+  return <div className="error">{children}</div>;
+}
+
 function App() {
   return (
     <Router>

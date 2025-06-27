@@ -33,22 +33,25 @@ if __name__ == '__main__':
         db.session.add_all(events)
         db.session.commit()
 
-        # Create reviews for events
-        reviews = [Review(
-            content=fake.sentence(nb_words=10),
-            rating=randint(1, 5),
-            user_id=user.id,
-            event_id=event.id
-        ) for user in users for event in events[:2]]
-        db.session.add_all(reviews)
-
         # Create user favorite movies
-        movie_ids = [11111, 22222, 33333]
-        user_movies = [UserMovie(
-            user_id=user.id,
-            movie_id=movie_ids[i % len(movie_ids)]
-        ) for i, user in enumerate(users)]
+        movie_ids = [11111, 22222, 33333]  # TMDB-like IDs
+        user_movies = [UserMovie(user_id=user.id, movie_id=movie_ids[i % len(
+            movie_ids)]) for i, user in enumerate(users)]
         db.session.add_all(user_movies)
-
         db.session.commit()
+
+        # Create reviews for favorited movies
+        reviews = []
+        for user in users:
+            for movie in user_movies:
+                if movie.user_id == user.id:
+                    reviews.append(Review(
+                        content=fake.sentence(nb_words=10),
+                        rating=randint(1, 5),
+                        user_id=user.id,
+                        movie_id=movie.movie_id
+                    ))
+        db.session.add_all(reviews)
+        db.session.commit()
+
         print("Database seeded successfully!")

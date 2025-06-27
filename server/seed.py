@@ -18,10 +18,18 @@ if __name__ == '__main__':
             user.set_password('password123')
         db.session.add_all(users)
 
+        # Sample image URLs (e.g., from TMDB or placeholders)
+        image_urls = [
+            'https://image.tmdb.org/t/p/w500/8cdWjvZNUix8Z86vR7l8Qqr2HYT.jpg',  # Example: Dune
+            'https://image.tmdb.org/t/p/w500/9yBVqNruk6Ykrwc32qrK2TIE5xw.jpg',  # Example: No Time to Die
+            'https://image.tmdb.org/t/p/w500/kb4s0ML0iVZlG6wAKbbs9NAm6X.jpg'   # Example: Spider-Man
+        ]
+
         events = [Event(
             title=f"Movie Night: {fake.catch_phrase()}",
-            date=fake.date_time_between(start_date="now", end_date="+30d")
-        ) for _ in range(3)]
+            date=fake.date_time_between(start_date="now", end_date="+30d"),
+            image_url=image_urls[i % len(image_urls)]  # Cycle through URLs
+        ) for i in range(3)]
         db.session.add_all(events)
 
         db.session.commit()

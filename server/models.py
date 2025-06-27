@@ -29,6 +29,7 @@ class Event(db.Model, SerializerMixin):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     date = db.Column(db.DateTime, nullable=False)
+    image_url = db.Column(db.String(255))  # Store URL to movie poster
     reviews = db.relationship('Review', backref='event', lazy=True)
     users = db.relationship('UserEvent', backref='event', lazy=True)
     serialize_rules = ('-reviews.event', '-users.event')

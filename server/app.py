@@ -138,20 +138,26 @@ class ReviewList(Resource):
     @login_required
     def post(self):
         data = request.get_json()
-        if not data:
-            return {'error': 'Missing or invalid JSON body'}, 400
-        user_id = session['user_id']
-        movie_id = data.get('movie_id')
-        if not UserMovie.query.filter_by(user_id=user_id, movie_id=movie_id).first():
+        if not all(key in data for key in ['content', 'rating', 'movie_id']):
+            return {'error': 'Missing required fields'}, 400
+        user_id = session.get('user_id')
+        if not 1 <= data['rating'] <= 5:
+            return {'error': 'Rating must be between 1 and 5'}, 400
+        if not UserMovie.query.filter_by(user_id=user_id, movie_id=data['movie_id']).first():
             return {'error': 'You can only review movies you have favorited.'}, 403
+        new_review = Review(
+            content=data['content'],
+            rating=data['rating'],
+            user_id=user_id,
+            movie_id=data['movie_id']
+        )
         try:
-            review = Review(
-                content=data['content'], rating=data['rating'], user_id=user_id, movie_id=movie_id)
-            db.session.add(review)
+            db.session.add(new_review)
             db.session.commit()
-            return review.to_dict(only=('id', 'content', 'rating', 'movie_id')), 201
-        except ValueError as e:
-            return {'error': str(e)}, 400
+            return new_review.to_dict(), 201
+        except Exception as e:
+            db.session.rollback()
+            return {'error': str(e)}, 500
 
     @login_required
     def delete(self, review_id):

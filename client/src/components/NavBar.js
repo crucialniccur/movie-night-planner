@@ -1,28 +1,32 @@
-import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 function NavBar() {
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    !!sessionStorage.getItem("user_id")
-  );
-
-  useEffect(() => {
-    const checkSession = () => {
-      setIsLoggedIn(!!sessionStorage.getItem("user_id"));
-    };
-    window.addEventListener("storage", checkSession); // Update on storage change
-    return () => window.removeEventListener("storage", checkSession);
-  }, []);
+  const userId = sessionStorage.getItem("user_id");
 
   return (
-    <nav>
-      <Link to="/">Home</Link> | <Link to="/movies">Movies</Link> |
-      <Link to="/favorites">Favorites</Link> |
-      {isLoggedIn ? (
-        <Link to="/logout">Logout</Link>
-      ) : (
-        <Link to="/login">Login</Link>
-      )}
+    <nav className="navbar">
+      <ul>
+        <li>
+          <Link to="/">Home</Link>
+        </li>
+        <li>
+          <Link to="/movies">Movies</Link>
+        </li>
+        {userId ? (
+          <>
+            <li>
+              <Link to="/favorites">Favorites</Link>
+            </li>
+            <li>
+              <Link to="/logout">Logout</Link>
+            </li>
+          </>
+        ) : (
+          <li>
+            <Link to="/login">Login</Link>
+          </li>
+        )}
+      </ul>
     </nav>
   );
 }

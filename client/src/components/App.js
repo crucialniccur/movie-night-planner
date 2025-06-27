@@ -5,6 +5,7 @@ import MovieList from "./MovieList";
 import ReviewForm from "./ReviewForm";
 import Home from "./Home";
 import Login from "./Login";
+import Logout from "./Logout";
 import ReviewList from "./ReviewList";
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
         <Route path="/reviews" element={<ReviewForm />} />
         <Route path="/reviews/list" element={<ReviewList />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/logout" element={<Logout />} />
       </Routes>
     </Router>
   );

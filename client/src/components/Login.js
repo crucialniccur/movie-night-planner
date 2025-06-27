@@ -21,9 +21,9 @@ function Login() {
       })
       .then((data) => {
         console.log("Logged in:", data);
-        sessionStorage.setItem("user_id", data.id);
+        sessionStorage.setItem("user_id", data.id); // Set user_id
         setError("");
-        navigate("/movies"); // Redirect after login
+        navigate("/movies");
       })
       .catch((err) => setError(err.message));
   };

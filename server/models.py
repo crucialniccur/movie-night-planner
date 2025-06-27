@@ -51,6 +51,3 @@ class UserMovie(db.Model, SerializerMixin):
     movie_id = db.Column(db.Integer, nullable=False)  # TMDB movie ID
     favorite_date = db.Column(db.DateTime, nullable=False, default=db.func.now())
     serialize_rules = ('-user.user_movies',)
-
-    # Optional: relationship to User if you want to access user from UserMovie
-    user = db.relationship('User', backref='user_movies', lazy=True)

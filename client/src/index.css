@@ -1,58 +1,110 @@
+:root {
+  --primary-bg: #1a1a1a; /* Dark charcoal, movie theater vibe */
+  --accent-color: #e50914; /* Netflix-red for buttons */
+  --text-color: #ffffff; /* White for readability */
+  --secondary-bg: #2c2c2c; /* Slightly lighter for cards */
+  --highlight: #ffd700; /* Gold for subtle highlights */
+}
+
 body {
-  font-family: Arial, sans-serif;
+  font-family: "Helvetica Neue", Arial, sans-serif;
   margin: 0;
   padding: 20px;
-  background-color: #f4f4f4;
+  background-color: var(--primary-bg);
+  color: var(--text-color);
+  line-height: 1.6;
 }
+
 nav {
-  background-color: #333;
-  padding: 10px;
-  margin-bottom: 20px;
+  background-color: var(--secondary-bg);
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
+
 nav a {
-  color: white;
-  margin: 0 15px;
+  color: var(--text-color);
+  margin: 0 20px;
   text-decoration: none;
+  font-weight: bold;
+  transition: color 0.3s ease;
 }
+
 nav a:hover {
-  text-decoration: underline;
+  color: var(--highlight);
 }
+
 h1 {
-  color: #333;
+  font-size: 2.2em;
+  margin-bottom: 20px;
+  text-align: center;
+  color: var(--highlight);
 }
+
 form {
   display: flex;
   flex-direction: column;
   max-width: 400px;
-  gap: 10px;
+  margin: 20px auto;
+  background-color: var(--secondary-bg);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
 }
+
 input,
 button {
-  padding: 8px;
-  font-size: 16px;
-}
-button {
-  background-color: #333;
-  color: white;
+  padding: 10px;
+  font-size: 1em;
+  margin-bottom: 10px;
   border: none;
-  cursor: pointer;
+  border-radius: 4px;
 }
+
+input {
+  background-color: #3a3a3a;
+  color: var(--text-color);
+}
+
+button {
+  background-color: var(--accent-color);
+  color: var(--text-color);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #c10812;
+}
+
 button:disabled {
-  background-color: #777;
+  background-color: #555;
   cursor: not-allowed;
 }
+
 ul {
   list-style: none;
   padding: 0;
+  max-width: 600px;
+  margin: 0 auto;
 }
+
 li {
-  background-color: white;
-  padding: 10px;
-  margin: 5px 0;
-  border-radius: 5px;
+  background-color: var(--secondary-bg);
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
+
 .error {
-  color: red;
-  font-size: 14px;
+  color: #ff4d4d;
+  font-size: 0.9em;
   margin-top: 5px;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
 }

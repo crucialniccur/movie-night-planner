@@ -12,13 +12,14 @@ function MovieList() {
   }, []);
 
   return (
-    <div>
-      <h1>Movie Night Events</h1>
+    <div className="container">
+      <h1>Movie Events</h1>
       <ul>
         {events.map((event) => (
           <li key={event.id}>
-            {event.title} - {new Date(event.date).toLocaleString()}
-            <Link to={`/reviews?event_id=${event.id}`}>View Reviews</Link>
+            {event.title} - {new Date(event.date).toLocaleDateString()}{" "}
+            <Link to={`/reviews?event_id=${event.id}`}>Submit Review</Link>{" "}
+            <Link to={`/reviews/list?event_id=${event.id}`}>View Reviews</Link>
           </li>
         ))}
       </ul>

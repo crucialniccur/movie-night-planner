@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ErrorPage from "./ErrorPage";
 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
@@ -20,37 +19,35 @@ function Login() {
         return res.json();
       })
       .then((data) => {
-        console.log("Logged in:", data);
-        sessionStorage.setItem("user_id", data.id); // Set user_id
-        setError("");
-        navigate("/movies");
+        if (data.id) {
+          sessionStorage.setItem("user_id", data.id); // Store user_id
+          navigate("/movies"); // Redirect to movies page
+        } else {
+          throw new Error("Invalid response");
+        }
       })
       .catch((err) => setError(err.message));
   };
 
   return (
-    <div>
+    <div className="container">
       <h1>Login</h1>
-      {error && <ErrorPage>{error}</ErrorPage>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
       <form onSubmit={handleSubmit}>
-        <div>
-          <label>Username</label>
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="e.g., alice"
-          />
-        </div>
-        <div>
-          <label>Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="e.g., password123"
-          />
-        </div>
+        <input
+          type="text"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder="Username"
+          required
+        />
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Password"
+          required
+        />
         <button type="submit">Login</button>
       </form>
     </div>

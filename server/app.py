@@ -40,11 +40,11 @@ def check_session():
 class Login(Resource):
     def post(self):
         data = request.get_json()
-        if not data:
-            return {'error': 'Missing or invalid JSON body'}, 400
+        if not data or 'username' not in data or 'password' not in data:
+            return {'error': 'Missing username or password'}, 400
         user = User.query.filter_by(username=data.get('username')).first()
         if user and user.check_password(data.get('password')):
-            session['user_id'] = user.id
+            session['user_id'] = user.id  # Ensure this sets the session
             return user.to_dict(only=('id', 'username')), 200
         return {'error': 'Invalid credentials'}, 401
 

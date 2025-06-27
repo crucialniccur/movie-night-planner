@@ -35,11 +35,6 @@ def check_session():
     return {'user_id': session.get('user_id', None)}, 200
 
 
-@app.route('/logout', methods=['POST'])
-def logout():
-    session.clear()  # Clear all session data
-    return {'message': 'Logged out successfully'}, 200
-
 # Authentication routes
 
 
@@ -54,9 +49,9 @@ class Login(Resource):
 
 
 class Logout(Resource):
-    def delete(self):
-        session.pop('user_id', None)
-        return {'message': 'Logged out'}, 200
+    def post(self):  # Changed from delete to post
+        session.clear()
+        return {'message': 'Logged out successfully'}, 200
 
 
 # Resource routes

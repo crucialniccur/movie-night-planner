@@ -9,7 +9,7 @@ from flask_restful import Resource
 
 # Local imports
 from config import app, db, api
-from models import User, Event, Review, UserEvent
+from models import User, Event, Review, UserEvent, UserMovie
 
 
 # Middleware to check authentication
@@ -167,6 +167,20 @@ class UserEventList(Resource):
             return {'error': str(e)}, 400
 
 
+class UserMovieResource(Resource):
+    @login_required
+    def post(self, movie_id):
+        user_id = session.get('user_id')
+        if not user_id:
+            return {'error': 'Unauthorized'}, 401
+        if UserMovie.query.filter_by(user_id=user_id, movie_id=movie_id).first():
+            return {'message': 'Already favorited'}, 400
+        new_favorite = UserMovie(user_id=user_id, movie_id=movie_id)
+        db.session.add(new_favorite)
+        db.session.commit()
+        return {'message': 'Movie favorited'}, 201
+
+
 # Register resources
 api.add_resource(Login, '/login')
 api.add_resource(Logout, '/logout')
@@ -175,6 +189,7 @@ api.add_resource(EventList, '/events')
 api.add_resource(EventByID, '/events/<int:id>')
 api.add_resource(ReviewList, '/reviews')
 api.add_resource(UserEventList, '/user_events')
+api.add_resource(UserMovieResource, '/favorite/<int:movie_id>', endpoint='favorite')
 
 
 # Run the Flask server

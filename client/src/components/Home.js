@@ -4,10 +4,11 @@ function Home() {
   const [trendingMovies, setTrendingMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [favoritedIds, setFavoritedIds] = useState([]);
   const apiKey = "a4cd64db16ded6df2896cccfb552989a";
   const userId = sessionStorage.getItem("user_id");
   const username = userId
-    ? fetch("/check-session")
+    ? fetch("/check-session", { credentials: "include" })
         .then((res) => res.json())
         .then((data) => (data.user_id ? "User" : null))
         .catch(() => null)
@@ -27,7 +28,30 @@ function Home() {
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-  }, [apiKey]);
+    if (userId) {
+      fetch("/favorites", { headers: { "Content-Type": "application/json" }, credentials: "include" })
+        .then((res) => res.json())
+        .then((data) => setFavoritedIds(data.map((fav) => fav.movie_id)))
+        .catch(() => {});
+    }
+  }, [apiKey, userId]);
+
+  const handleFavorite = (movieId) => {
+    fetch(`/favorite/${movieId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include"
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to favorite movie");
+        return res.json();
+      })
+      .then(() => {
+        setFavoritedIds((prev) => [...prev, movieId]);
+        window.dispatchEvent(new Event("favorites-updated"));
+      })
+      .catch((err) => alert(err.message));
+  };
 
   if (loading)
     return <div className="container">Loading trending movies...</div>;
@@ -50,6 +74,14 @@ function Home() {
               <div>
                 <h3>{movie.title}</h3>
                 <p>Release Date: {movie.release_date}</p>
+                {userId && (
+                  <button
+                    onClick={() => handleFavorite(movie.id)}
+                    disabled={favoritedIds.includes(movie.id)}
+                  >
+                    {favoritedIds.includes(movie.id) ? "Favorited" : "Favorite"}
+                  </button>
+                )}
               </div>
             </li>
           ))}

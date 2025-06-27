@@ -3,7 +3,9 @@ import { Link } from "react-router-dom";
 
 function Home() {
   const [movies, setMovies] = useState([]);
-  const apiKey = "a4cd64db16ded6df2896cccfb552989a"; //   Your TMDB key
+  const [favorites, setFavorites] = useState([]);
+  const apiKey = "YOUR_TMDB_API_KEY"; // Replace with your TMDB API key
+  const userId = sessionStorage.getItem("user_id");
 
   useEffect(() => {
     fetch(
@@ -12,15 +14,29 @@ function Home() {
       .then((res) => res.json())
       .then((data) => setMovies(data.results))
       .catch((err) => console.error("Error fetching movies:", err));
-  }, [apiKey]);
+
+    if (userId) {
+      fetch("/favorites")
+        .then((res) => res.json())
+        .then((data) => setFavorites(data.map((f) => f.movie_id)))
+        .catch((err) => console.error("Error fetching favorites:", err));
+    }
+  }, [apiKey, userId]);
 
   const handleFavorite = (movieId) => {
     fetch(`/favorite/${movieId}`, {
-      method: "POST",
+      method: favorites.includes(movieId) ? "DELETE" : "POST",
       headers: { "Content-Type": "application/json" },
     })
       .then((res) => res.json())
-      .then((data) => console.log(data))
+      .then((data) => {
+        console.log(data);
+        if (data.message === "Movie favorited") {
+          setFavorites([...favorites, movieId]);
+        } else if (data.message === "Movie removed from favorites") {
+          setFavorites(favorites.filter((id) => id !== movieId));
+        }
+      })
       .catch((err) => console.error("Favorite error:", err));
   };
 
@@ -38,15 +54,16 @@ function Home() {
             <div>
               <h3>{movie.title}</h3>
               <p>{movie.release_date}</p>
-              {sessionStorage.getItem("user_id") && (
+              {userId && (
                 <button onClick={() => handleFavorite(movie.id)}>
-                  Favorite
+                  {favorites.includes(movie.id) ? "Remove Favorite" : "Favorite"}
                 </button>
               )}
             </div>
           </li>
         ))}
       </ul>
+      <Link to="/favorites">View Favorites</Link>
     </div>
   );
 }

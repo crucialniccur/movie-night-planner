@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Formik, Form, Field, ErrorMessage } from "formik";
+import ErrorPage from "./ErrorPage";
 
 function ReviewForm() {
   const location = useLocation();
@@ -39,12 +39,12 @@ function ReviewForm() {
             <div>
               <label>Comment</label>
               <Field name="content" type="text" />
-              <ErrorMessage name="content" component="div" />
+              <ErrorMessage name="content" component={ErrorPage} />
             </div>
             <div>
               <label>Rating (1-5)</label>
               <Field name="rating" type="number" />
-              <ErrorMessage name="rating" component="div" />
+              <ErrorMessage name="rating" component={ErrorPage} />
             </div>
             <button type="submit" disabled={isSubmitting || !eventId}>
               Submit

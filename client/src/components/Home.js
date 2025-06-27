@@ -4,16 +4,27 @@ import { Link } from "react-router-dom";
 function Home() {
   const [movies, setMovies] = useState([]);
   const [favorites, setFavorites] = useState([]);
-  const apiKey = "YOUR_TMDB_API_KEY"; // Replace with your TMDB API key
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const apiKey = "a4cd64db16ded6df2896cccfb552989a"; // Replace with your TMDB API key
   const userId = sessionStorage.getItem("user_id");
 
   useEffect(() => {
+    setLoading(true);
+    setError(null);
     fetch(
       `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&sort_by=popularity.desc&page=1`
     )
-      .then((res) => res.json())
-      .then((data) => setMovies(data.results))
-      .catch((err) => console.error("Error fetching movies:", err));
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch movies");
+        return res.json();
+      })
+      .then((data) => {
+        if (data.results) setMovies(data.results);
+        else setError("No movie data found");
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
 
     if (userId) {
       fetch("/favorites")
@@ -39,6 +50,9 @@ function Home() {
       })
       .catch((err) => console.error("Favorite error:", err));
   };
+
+  if (loading) return <div className="container">Loading movies...</div>;
+  if (error) return <div className="container">Error: {error}</div>;
 
   return (
     <div className="container">

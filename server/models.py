@@ -1,5 +1,6 @@
 from sqlalchemy_serializer import SerializerMixin
 from config import db, bcrypt
+from sqlalchemy import CheckConstraint
 
 
 class User(db.Model, SerializerMixin):
@@ -35,11 +36,11 @@ class Review(db.Model, SerializerMixin):
     __tablename__ = 'reviews'
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(500), nullable=False)
-    rating = db.Column(db.Integer, nullable=False,
-                       check='rating >= 1 AND rating <= 5')
+    rating = db.Column(db.Integer, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    # Ensure this is the primary relationship
     movie_id = db.Column(db.Integer, nullable=False)
+    __table_args__ = (CheckConstraint(
+        'rating >= 1 AND rating <= 5', name='rating_range'),)
     serialize_rules = ('-user.reviews',)
 
 

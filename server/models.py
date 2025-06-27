@@ -8,7 +8,8 @@ class User(db.Model, SerializerMixin):
     __password = db.Column(db.String(128), nullable=False)
     reviews = db.relationship('Review', backref='user', lazy=True)
     events = db.relationship('UserEvent', backref='user', lazy=True)
-    serialize_rules = ('-reviews.user', '-events.user', '-__password')
+    movies = db.relationship('UserMovie', backref='user', lazy=True)
+    serialize_rules = ('-reviews.user', '-events.user', '-movies.user', '-__password')
 
     def set_password(self, password):
         self.__password = bcrypt.generate_password_hash(password).decode('utf-8')
@@ -42,3 +43,14 @@ class UserEvent(db.Model, SerializerMixin):
     event_id = db.Column(db.Integer, db.ForeignKey('events.id'), nullable=False)
     role = db.Column(db.String(20), nullable=False)
     serialize_rules = ('-user.events', '-event.users')
+
+class UserMovie(db.Model, SerializerMixin):
+    __tablename__ = 'user_movies'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    movie_id = db.Column(db.Integer, nullable=False)  # TMDB movie ID
+    favorite_date = db.Column(db.DateTime, nullable=False, default=db.func.now())
+    serialize_rules = ('-user.user_movies',)
+
+    # Optional: relationship to User if you want to access user from UserMovie
+    user = db.relationship('User', backref='user_movies', lazy=True)

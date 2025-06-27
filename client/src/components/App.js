@@ -1,9 +1,11 @@
 import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NavBar from "./NavBar";
 import MovieList from "./MovieList";
 import ReviewForm from "./ReviewForm";
 import Home from "./Home";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Login from "./Login";
+import ReviewList from "./ReviewList";
 
 function App() {
   return (
@@ -13,6 +15,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/movies" element={<MovieList />} />
         <Route path="/reviews" element={<ReviewForm />} />
+        <Route path="/reviews/list" element={<ReviewList />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
     </Router>
   );

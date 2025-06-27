@@ -38,6 +38,7 @@ if __name__ == '__main__':
         db.session.add_all(events)
         db.session.commit()  # Commit so events get IDs
 
+        # Create reviews (each user reviews the first two events)
         reviews = [Review(
             content=fake.sentence(nb_words=10),
             rating=randint(1, 5),

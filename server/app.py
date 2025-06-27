@@ -30,6 +30,11 @@ def index():
     return '<h1>Movie night Planner Innit</h1>'
 
 
+@app.route('/check-session')
+def check_session():
+    return {'user_id': session.get('user_id', None)}, 200
+
+
 # Authentication routes
 class Login(Resource):
     def post(self):

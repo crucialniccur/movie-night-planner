@@ -238,6 +238,22 @@ class UserFavoritesResource(Resource):
         return [{'id': f.id, 'movie_id': f.movie_id, 'favorite_date': f.favorite_date.isoformat()} for f in favorites], 200
 
 
+@app.route('/all-reviews')
+def all_reviews():
+    reviews = Review.query.all()
+    result = []
+    for r in reviews:
+        user = User.query.get(r.user_id)
+        result.append({
+            'id': r.id,
+            'movie_id': r.movie_id,
+            'rating': r.rating,
+            'content': r.content,
+            'user_id': r.user_id,
+            'username': user.username if user else 'Unknown'
+        })
+    return result, 200
+
 # Register resources
 api.add_resource(Login, '/login')
 api.add_resource(Logout, '/logout')

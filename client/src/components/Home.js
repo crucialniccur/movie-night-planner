@@ -5,6 +5,7 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [favoritedIds, setFavoritedIds] = useState([]);
+  const [reviewsByMovie, setReviewsByMovie] = useState({});
   const apiKey = "a4cd64db16ded6df2896cccfb552989a";
   const userId = sessionStorage.getItem("user_id");
   const username = userId
@@ -34,6 +35,18 @@ function Home() {
         .then((data) => setFavoritedIds(data.map((fav) => fav.movie_id)))
         .catch(() => {});
     }
+    // Fetch all reviews and group by movie_id
+    fetch("/all-reviews")
+      .then((res) => res.json())
+      .then((allReviews) => {
+        const grouped = {};
+        allReviews.forEach((review) => {
+          if (!grouped[review.movie_id]) grouped[review.movie_id] = [];
+          grouped[review.movie_id].push(review);
+        });
+        setReviewsByMovie(grouped);
+      })
+      .catch(() => {});
   }, [apiKey, userId]);
 
   const handleFavorite = (movieId) => {
@@ -81,6 +94,20 @@ function Home() {
                   >
                     {favoritedIds.includes(movie.id) ? "Favorited" : "Favorite"}
                   </button>
+                )}
+                {/* Show reviews for this movie */}
+                {reviewsByMovie[movie.id] && reviewsByMovie[movie.id].length > 0 && (
+                  <div className="movie-reviews" style={{ marginTop: "1em" }}>
+                    <h4>Reviews:</h4>
+                    <ul>
+                      {reviewsByMovie[movie.id].map((review) => (
+                        <li key={review.id}>
+                          <strong>{review.username}:</strong> <strong>Rating:</strong> {review.rating} <br />
+                          <span>{review.content}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 )}
               </div>
             </li>

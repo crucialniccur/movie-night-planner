@@ -7,6 +7,7 @@ import Home from "./Home";
 import Login from "./Login";
 import Logout from "./Logout";
 import ReviewList from "./ReviewList";
+import Favorites from "./Favorites";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/reviews/list" element={<ReviewList />} />
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
+        <Route path="/favorites" element={<Favorites />} />
       </Routes>
     </Router>
   );

@@ -20,7 +20,10 @@ function NavBar() {
       <Link to="/reviews">Submit Review</Link> |
       <Link to="/reviews/list">View Reviews</Link> |
       {isLoggedIn ? (
-        <Link to="/logout">Logout</Link>
+        <>
+          <Link to="/favorites">Favorites</Link> |
+          <Link to="/logout">Logout</Link>
+        </>
       ) : (
         <Link to="/login">Login</Link>
       )}

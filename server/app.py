@@ -41,6 +41,8 @@ def check_session():
 class Login(Resource):
     def post(self):
         data = request.get_json()
+        if not data:
+            return {'error': 'Missing or invalid JSON body'}, 400
         user = User.query.filter_by(username=data.get('username')).first()
         if user and user.check_password(data.get('password')):
             session['user_id'] = user.id
@@ -63,6 +65,8 @@ class UserList(Resource):
 
     def post(self):
         data = request.get_json()
+        if not data:
+            return {'error': 'Missing or invalid JSON body'}, 400
         try:
             user = User(username=data['username'])
             user.set_password(data['password'])
@@ -83,6 +87,8 @@ class EventList(Resource):
     @login_required
     def post(self):
         data = request.get_json()
+        if not data:
+            return {'error': 'Missing or invalid JSON body'}, 400
         try:
             event = Event(
                 title=data['title'],
@@ -104,6 +110,8 @@ class EventByID(Resource):
     def patch(self, id):
         event = Event.query.get_or_404(id)
         data = request.get_json()
+        if not data:
+            return {'error': 'Missing or invalid JSON body'}, 400
         try:
             for key, value in data.items():
                 if key == 'date':
@@ -131,6 +139,8 @@ class ReviewList(Resource):
     @login_required
     def post(self):
         data = request.get_json()
+        if not data:
+            return {'error': 'Missing or invalid JSON body'}, 400
         try:
             review = Review(
                 content=data['content'],
@@ -154,6 +164,8 @@ class UserEventList(Resource):
     @login_required
     def post(self):
         data = request.get_json()
+        if not data:
+            return {'error': 'Missing or invalid JSON body'}, 400
         try:
             user_event = UserEvent(
                 user_id=session['user_id'],
@@ -171,14 +183,30 @@ class UserMovieResource(Resource):
     @login_required
     def post(self, movie_id):
         user_id = session.get('user_id')
-        if not user_id:
-            return {'error': 'Unauthorized'}, 401
         if UserMovie.query.filter_by(user_id=user_id, movie_id=movie_id).first():
             return {'message': 'Already favorited'}, 400
         new_favorite = UserMovie(user_id=user_id, movie_id=movie_id)
         db.session.add(new_favorite)
         db.session.commit()
         return {'message': 'Movie favorited'}, 201
+
+    @login_required
+    def delete(self, movie_id):
+        user_id = session.get('user_id')
+        favorite = UserMovie.query.filter_by(user_id=user_id, movie_id=movie_id).first()
+        if not favorite:
+            return {'message': 'Not favorited'}, 404
+        db.session.delete(favorite)
+        db.session.commit()
+        return {'message': 'Movie removed from favorites'}, 200
+
+
+class UserFavoritesResource(Resource):
+    @login_required
+    def get(self):
+        user_id = session.get('user_id')
+        favorites = UserMovie.query.filter_by(user_id=user_id).all()
+        return [{'id': f.id, 'movie_id': f.movie_id, 'favorite_date': f.favorite_date.isoformat()} for f in favorites], 200
 
 
 # Register resources
@@ -189,8 +217,8 @@ api.add_resource(EventList, '/events')
 api.add_resource(EventByID, '/events/<int:id>')
 api.add_resource(ReviewList, '/reviews')
 api.add_resource(UserEventList, '/user_events')
-api.add_resource(UserMovieResource,
-                 '/favorite/<int:movie_id>', endpoint='favorite')
+api.add_resource(UserMovieResource, '/favorite/<int:movie_id>', endpoint='favorite')
+api.add_resource(UserFavoritesResource, '/favorites', endpoint='favorites')
 
 
 # Run the Flask server

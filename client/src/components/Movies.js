@@ -9,8 +9,19 @@ function Movies() {
   const [reviewContent, setReviewContent] = useState({});
   const [reviewRating, setReviewRating] = useState({});
   const [reviewError, setReviewError] = useState({});
+  const [favLoading, setFavLoading] = useState({});
   const apiKey = "a4cd64db16ded6df2896cccfb552989a";
   const userId = sessionStorage.getItem('user_id');
+
+  // Helper to fetch favorites from backend
+  const fetchFavorites = () => {
+    if (userId) {
+      fetch('/favorites')
+        .then(res => res.json())
+        .then(data => setFavorites(data.map(f => f.movie_id)))
+        .catch(err => console.error('Error fetching favorites:', err));
+    }
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -26,13 +37,7 @@ function Movies() {
       })
       .catch(err => setError(err.message))
       .finally(() => setLoading(false));
-
-    if (userId) {
-      fetch('/favorites')
-        .then(res => res.json())
-        .then(data => setFavorites(data.map(f => f.movie_id)))
-        .catch(err => console.error('Error fetching favorites:', err));
-    }
+    fetchFavorites();
   }, [apiKey, userId]);
 
   useEffect(() => {
@@ -55,20 +60,28 @@ function Movies() {
     }
   }, [movies]);
 
+  // Notify Favorites page to refetch
+  const notifyFavoritesUpdate = () => {
+    window.dispatchEvent(new Event('favorites-updated'));
+  };
+
   const handleFavorite = (movieId) => {
+    if (favLoading[movieId]) return;
+    setFavLoading({ ...favLoading, [movieId]: true });
+    const isFav = favorites.includes(movieId);
     fetch(`/favorite/${movieId}`, {
-      method: favorites.includes(movieId) ? 'DELETE' : 'POST',
+      method: isFav ? 'DELETE' : 'POST',
       headers: { 'Content-Type': 'application/json' },
     })
       .then(res => res.json())
       .then(data => {
-        if (data.message === 'Movie favorited') {
-          setFavorites([...favorites, movieId]);
-        } else if (data.message === 'Movie removed from favorites') {
-          setFavorites(favorites.filter(id => id !== movieId));
-        }
+        fetchFavorites(); // Sync with backend
+        notifyFavoritesUpdate(); // Let Favorites page know
       })
-      .catch(err => console.error('Favorite error:', err));
+      .catch(err => {
+        console.error('Favorite error:', err);
+      })
+      .finally(() => setFavLoading(prev => ({ ...prev, [movieId]: false })));
   };
 
   const handleReviewChange = (movieId, field, value) => {
@@ -115,55 +128,73 @@ function Movies() {
     <div className="container">
       <h1>Movies</h1>
       <ul>
-        {movies.map(movie => (
-          <li key={movie.id} className="event-card">
-            <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} className="event-poster" />
-            <div>
-              <h3>{movie.title}</h3>
-              <p>{movie.release_date}</p>
-              {userId && (
-                <button onClick={() => handleFavorite(movie.id)}>
-                  {favorites.includes(movie.id) ? 'Remove Favorite' : 'Favorite'}
-                </button>
-              )}
+        {movies.map(movie => {
+          const isFav = favorites.includes(movie.id);
+          return (
+            <li key={movie.id} className="event-card">
+              <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} className="event-poster" />
               <div>
-                <h4>Reviews:</h4>
-                {reviewsByMovie[movie.id] && reviewsByMovie[movie.id].length > 0 ? (
-                  <ul>
-                    {reviewsByMovie[movie.id].map(review => (
-                      <li key={review.id}>
-                        <strong>User {review.user_id}:</strong> {review.content} (Rating: {review.rating})
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>No reviews yet.</p>
+                <h3>{movie.title}</h3>
+                <p>{movie.release_date}</p>
+                {userId && (
+                  <button
+                    onClick={() => handleFavorite(movie.id)}
+                    disabled={favLoading[movie.id]}
+                    style={{
+                      background: isFav ? '#222' : '#d32f2f',
+                      color: isFav ? '#fff' : '#fff',
+                      border: isFav ? '2px solid #d32f2f' : 'none',
+                      boxShadow: isFav ? '0 0 8px #d32f2f' : '0 0 8px #d32f2f',
+                      marginBottom: '10px',
+                      cursor: favLoading[movie.id] ? 'not-allowed' : 'pointer',
+                      fontWeight: 'bold',
+                      borderRadius: '6px',
+                      padding: '8px 18px',
+                      transition: 'all 0.2s',
+                    }}
+                  >
+                    {isFav ? 'Favorited ✓' : 'Favorite'}
+                  </button>
+                )}
+                <div>
+                  <h4>Reviews:</h4>
+                  {reviewsByMovie[movie.id] && reviewsByMovie[movie.id].length > 0 ? (
+                    <ul>
+                      {reviewsByMovie[movie.id].map(review => (
+                        <li key={review.id}>
+                          <strong>User {review.user_id}:</strong> {review.content} (Rating: {review.rating})
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>No reviews yet.</p>
+                  )}
+                </div>
+                {userId && isFav && (
+                  <form onSubmit={e => handleReviewSubmit(e, movie.id)} className="review-form">
+                    <h4>Leave a Review</h4>
+                    <textarea
+                      value={reviewContent[movie.id] || ''}
+                      onChange={e => handleReviewChange(movie.id, 'content', e.target.value)}
+                      placeholder="Write your review"
+                      required
+                    />
+                    <input
+                      type="number"
+                      value={reviewRating[movie.id] || 1}
+                      onChange={e => handleReviewChange(movie.id, 'rating', Math.max(1, Math.min(5, e.target.value)))}
+                      min="1"
+                      max="5"
+                      required
+                    />
+                    <button type="submit">Submit Review</button>
+                    {reviewError[movie.id] && <p style={{ color: 'red' }}>{reviewError[movie.id]}</p>}
+                  </form>
                 )}
               </div>
-              {userId && favorites.includes(movie.id) && (
-                <form onSubmit={e => handleReviewSubmit(e, movie.id)} className="review-form">
-                  <h4>Leave a Review</h4>
-                  <textarea
-                    value={reviewContent[movie.id] || ''}
-                    onChange={e => handleReviewChange(movie.id, 'content', e.target.value)}
-                    placeholder="Write your review"
-                    required
-                  />
-                  <input
-                    type="number"
-                    value={reviewRating[movie.id] || 1}
-                    onChange={e => handleReviewChange(movie.id, 'rating', Math.max(1, Math.min(5, e.target.value)))}
-                    min="1"
-                    max="5"
-                    required
-                  />
-                  <button type="submit">Submit Review</button>
-                  {reviewError[movie.id] && <p style={{ color: 'red' }}>{reviewError[movie.id]}</p>}
-                </form>
-              )}
-            </div>
-          </li>
-        ))}
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

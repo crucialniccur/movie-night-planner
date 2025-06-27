@@ -4,7 +4,7 @@ function Favorites() {
   const [favorites, setFavorites] = useState([]);
   const userId = sessionStorage.getItem('user_id');
 
-  useEffect(() => {
+  const fetchFavorites = () => {
     if (userId) {
       fetch(`/favorites`, {
         headers: { 'Content-Type': 'application/json' },
@@ -13,6 +13,14 @@ function Favorites() {
         .then(data => setFavorites(data))
         .catch(err => console.error('Error fetching favorites:', err));
     }
+  };
+
+  useEffect(() => {
+    fetchFavorites();
+    // Listen for updates from Movies page
+    const handler = () => fetchFavorites();
+    window.addEventListener('favorites-updated', handler);
+    return () => window.removeEventListener('favorites-updated', handler);
   }, [userId]);
 
   return (

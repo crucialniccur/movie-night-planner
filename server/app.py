@@ -133,19 +133,31 @@ class EventByID(Resource):
 class ReviewList(Resource):
     @login_required
     def get(self):
-        user_id = session.get('user_id')
-        reviews = Review.query.filter_by(user_id=user_id).all()
-        return [r.to_dict(only=('id', 'content', 'rating', 'movie_id')) for r in reviews], 200
+        movie_id = request.args.get('movie_id')
+        if movie_id:
+            reviews = Review.query.filter_by(movie_id=movie_id).all()
+            return [r.to_dict(only=('id', 'content', 'rating', 'movie_id', 'user_id')) for r in reviews], 200
+        else:
+            user_id = session.get('user_id')
+            reviews = Review.query.filter_by(user_id=user_id).all()
+            return [r.to_dict(only=('id', 'content', 'rating', 'movie_id')) for r in reviews], 200
 
     @login_required
     def post(self):
         data = request.get_json()
+        if not data:
+            return {'error': 'Missing or invalid JSON body'}, 400
+        user_id = session['user_id']
+        movie_id = data.get('movie_id')
+        # Only allow review if user has favorited the movie
+        if not UserMovie.query.filter_by(user_id=user_id, movie_id=movie_id).first():
+            return {'error': 'You can only review movies you have favorited.'}, 403
         try:
             review = Review(
                 content=data['content'],
                 rating=data['rating'],
-                user_id=session['user_id'],
-                movie_id=data['movie_id']
+                user_id=user_id,
+                movie_id=movie_id
             )
             db.session.add(review)
             db.session.commit()

@@ -72,8 +72,31 @@ function Home() {
 
   return (
     <div className="container">
-      <h1>Welcome{userId ? `, ${username}` : ""} to Movie Night Planner</h1>
-      <p>Discover the latest trending movies and plan your night!</p>
+      <div className="home-hero" style={{
+        textAlign: "center",
+        padding: "2em 0 2em 0",
+        background: "#222",
+        color: "#FFD700",
+        borderRadius: "10px",
+        marginBottom: "2em"
+      }}>
+        <h1 style={{ fontSize: "2.5em", marginBottom: "0.5em" }}>
+          🎬 Welcome to Movie Night Planner!
+        </h1>
+        <p style={{ fontSize: "1.3em", color: "#fff", marginBottom: "1em" }}>
+          Discover trending movies, save your favorites, and share your thoughts with reviews.<br/>
+          Plan your perfect movie night with friends and never miss a blockbuster!
+        </p>
+        {userId ? (
+          <p style={{ color: "#FFD700", fontWeight: "bold" }}>
+            Glad to have you back! Explore what's trending and add your favorites.
+          </p>
+        ) : (
+          <p style={{ color: "#FFD700", fontWeight: "bold" }}>
+            <a href="/login" style={{ color: "#FFD700", textDecoration: "underline" }}>Login</a> or <a href="/users" style={{ color: "#FFD700", textDecoration: "underline" }}>Sign up</a> to start your movie journey!
+          </p>
+        )}
+      </div>
       <div className="trending-section">
         <h2>Trending Today</h2>
         <ul>

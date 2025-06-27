@@ -9,8 +9,8 @@ if __name__ == '__main__':
     fake = Faker()
     with app.app_context():
         print("Starting seed...")
-        db.drop_all()
-        db.create_all()
+        # db.drop_all()
+        # db.create_all()
 
         # Create users
         users = [User(username=name) for name in ["alice", "bob", "charlie"]]

@@ -37,11 +37,10 @@ class Review(db.Model, SerializerMixin):
     __tablename__ = 'reviews'
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(500), nullable=False)
-    rating = db.Column(db.Integer, nullable=False)
+    rating = db.Column(db.Integer, nullable=False, check='rating >= 1 AND rating <= 5')
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    event_id = db.Column(db.Integer, db.ForeignKey(
-        'events.id'), nullable=False)  # Corrected to events
-    serialize_rules = ('-user.reviews', '-event.reviews')
+    movie_id = db.Column(db.Integer, nullable=False)  # Changed from event_id to movie_id
+    serialize_rules = ('-user.reviews',)
 
 
 class UserEvent(db.Model, SerializerMixin):

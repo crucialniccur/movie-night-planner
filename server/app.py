@@ -131,28 +131,36 @@ class EventByID(Resource):
 
 
 class ReviewList(Resource):
+    @login_required
     def get(self):
-        reviews = [review.to_dict(only=(
-            'id', 'content', 'rating', 'user_id', 'event_id')) for review in Review.query.all()]
-        return reviews, 200
+        user_id = session.get('user_id')
+        reviews = Review.query.filter_by(user_id=user_id).all()
+        return [r.to_dict(only=('id', 'content', 'rating', 'movie_id')) for r in reviews], 200
 
     @login_required
     def post(self):
         data = request.get_json()
-        if not data:
-            return {'error': 'Missing or invalid JSON body'}, 400
         try:
             review = Review(
                 content=data['content'],
                 rating=data['rating'],
                 user_id=session['user_id'],
-                event_id=data['event_id']
+                movie_id=data['movie_id']
             )
             db.session.add(review)
             db.session.commit()
-            return review.to_dict(only=('id', 'content', 'rating', 'user_id', 'event_id')), 201
+            return review.to_dict(only=('id', 'content', 'rating', 'movie_id')), 201
         except ValueError as e:
             return {'error': str(e)}, 400
+
+    @login_required
+    def delete(self, review_id):
+        review = Review.query.get_or_404(review_id)
+        if review.user_id != session.get('user_id'):
+            return {'error': 'Unauthorized'}, 403
+        db.session.delete(review)
+        db.session.commit()
+        return {'message': 'Review deleted'}, 200
 
 
 class UserEventList(Resource):
@@ -215,7 +223,7 @@ api.add_resource(Logout, '/logout')
 api.add_resource(UserList, '/users')
 api.add_resource(EventList, '/events')
 api.add_resource(EventByID, '/events/<int:id>')
-api.add_resource(ReviewList, '/reviews')
+api.add_resource(ReviewList, '/reviews', '/reviews/<int:review_id>', endpoint='reviews')
 api.add_resource(UserEventList, '/user_events')
 api.add_resource(UserMovieResource, '/favorite/<int:movie_id>', endpoint='favorite')
 api.add_resource(UserFavoritesResource, '/favorites', endpoint='favorites')

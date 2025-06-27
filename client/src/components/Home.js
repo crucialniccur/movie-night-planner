@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import ReviewForm from './ReviewForm';
 
 function Home() {
   const [movies, setMovies] = useState([]);
@@ -69,9 +70,12 @@ function Home() {
               <h3>{movie.title}</h3>
               <p>{movie.release_date}</p>
               {userId && (
-                <button onClick={() => handleFavorite(movie.id)}>
-                  {favorites.includes(movie.id) ? "Remove Favorite" : "Favorite"}
-                </button>
+                <>
+                  <button onClick={() => handleFavorite(movie.id)}>
+                    {favorites.includes(movie.id) ? "Remove Favorite" : "Favorite"}
+                  </button>
+                  <ReviewForm movieId={movie.id} />
+                </>
               )}
             </div>
           </li>

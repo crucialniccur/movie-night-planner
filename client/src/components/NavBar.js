@@ -22,6 +22,7 @@ function NavBar() {
       {isLoggedIn ? (
         <>
           <Link to="/favorites">Favorites</Link> |
+          <Link to="/reviews/list">My Reviews</Link> |
           <Link to="/logout">Logout</Link>
         </>
       ) : (

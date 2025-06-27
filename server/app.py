@@ -2,6 +2,7 @@
 
 # Standard library imports
 from datetime import datetime
+import traceback
 
 # Remote library imports
 from flask import request, session
@@ -138,25 +139,34 @@ class ReviewList(Resource):
     @login_required
     def post(self):
         data = request.get_json()
-        if not all(key in data for key in ['content', 'rating', 'movie_id']):
+        if not data or not all(key in data for key in ['content', 'rating', 'movie_id']):
             return {'error': 'Missing required fields'}, 400
         user_id = session.get('user_id')
-        if not 1 <= data['rating'] <= 5:
+        rating = data.get('rating')
+        movie_id = data.get('movie_id')
+        content = data.get('content')
+        if rating is None or not 1 <= rating <= 5:
             return {'error': 'Rating must be between 1 and 5'}, 400
-        if not UserMovie.query.filter_by(user_id=user_id, movie_id=data['movie_id']).first():
+        user_movie = UserMovie.query.filter_by(user_id=user_id, movie_id=movie_id).first()
+        if not user_movie:
             return {'error': 'You can only review movies you have favorited.'}, 403
-        new_review = Review(
-            content=data['content'],
-            rating=data['rating'],
-            user_id=user_id,
-            movie_id=data['movie_id']
-        )
         try:
+            print('UserMovie:', user_movie)
+            print('Review data:', data)
+            new_review = Review(
+                content=content,
+                rating=rating,
+                user_id=user_id,
+                movie_id=movie_id
+            )
             db.session.add(new_review)
             db.session.commit()
+            print('New Review:', new_review)
             return new_review.to_dict(), 201
         except Exception as e:
             db.session.rollback()
+            print('Review creation error:', e)
+            traceback.print_exc()
             return {'error': str(e)}, 500
 
     @login_required

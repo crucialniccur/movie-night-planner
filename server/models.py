@@ -11,8 +11,7 @@ class User(db.Model, SerializerMixin):
     reviews = db.relationship('Review', backref='user', lazy=True)
     events = db.relationship('UserEvent', backref='user', lazy=True)
     movies = db.relationship('UserMovie', backref='user_favorite', lazy=True)
-    serialize_rules = ('-reviews.user', '-events.user',
-                       '-movies.user', '-__password')
+    serialize_rules = ('-reviews.user', '-events.user', '-movies.user_favorite', '-__password')
 
     def set_password(self, password):
         self.__password = bcrypt.generate_password_hash(
@@ -61,4 +60,4 @@ class UserMovie(db.Model, SerializerMixin):
     movie_id = db.Column(db.Integer, nullable=False)
     favorite_date = db.Column(
         db.DateTime, nullable=False, default=db.func.now())
-    serialize_rules = ('-user.user_movies')
+    serialize_rules = ('-user_favorite.movies',)

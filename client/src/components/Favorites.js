@@ -5,6 +5,8 @@ function Favorites() {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [reviewInputs, setReviewInputs] = useState({});
+  const [reviewStatus, setReviewStatus] = useState({});
   const apiKey = "a4cd64db16ded6df2896cccfb552989a";
   const userId = sessionStorage.getItem("user_id");
 
@@ -52,6 +54,57 @@ function Favorites() {
     return () => window.removeEventListener("favorites-updated", handler);
   }, [userId]);
 
+  const handleRemoveFavorite = (movieId) => {
+    fetch(`/favorite/${movieId}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include"
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to remove favorite");
+        return res.json();
+      })
+      .then(() => {
+        window.dispatchEvent(new Event("favorites-updated"));
+      })
+      .catch((err) => alert(err.message));
+  };
+
+  const handleReviewChange = (movieId, field, value) => {
+    setReviewInputs((prev) => ({
+      ...prev,
+      [movieId]: {
+        ...prev[movieId],
+        [field]: value,
+      },
+    }));
+  };
+
+  const handleReviewSubmit = (movieId) => {
+    const input = reviewInputs[movieId] || {};
+    if (!input.rating || !input.content) {
+      setReviewStatus((prev) => ({ ...prev, [movieId]: "Please fill all fields." }));
+      return;
+    }
+    fetch("/reviews", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        movie_id: movieId,
+        rating: Number(input.rating),
+        content: input.content,
+      }),
+    })
+      .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
+      .then(({ ok, data }) => {
+        if (!ok) throw new Error(data.error || "Failed to submit review");
+        setReviewStatus((prev) => ({ ...prev, [movieId]: "Review submitted!" }));
+        setReviewInputs((prev) => ({ ...prev, [movieId]: { rating: "", content: "" } }));
+      })
+      .catch((err) => setReviewStatus((prev) => ({ ...prev, [movieId]: err.message })));
+  };
+
   if (loading) return <div className="container">Loading favorites...</div>;
   if (error) return <div className="container">Error: {error}</div>;
   if (!favorites.length)
@@ -74,6 +127,36 @@ function Favorites() {
               <p>
                 Favorited: {new Date(movie.favorite_date).toLocaleDateString()}
               </p>
+              <button onClick={() => handleRemoveFavorite(movie.id)}>
+                Remove from Favorites
+              </button>
+              <div style={{ marginTop: "1em" }}>
+                <h4>Leave a Review</h4>
+                <input
+                  type="number"
+                  min="1"
+                  max="5"
+                  placeholder="Rating (1-5)"
+                  value={reviewInputs[movie.id]?.rating || ""}
+                  onChange={e => handleReviewChange(movie.id, "rating", e.target.value)}
+                  style={{ width: "100px", marginRight: "0.5em" }}
+                />
+                <input
+                  type="text"
+                  placeholder="Your review"
+                  value={reviewInputs[movie.id]?.content || ""}
+                  onChange={e => handleReviewChange(movie.id, "content", e.target.value)}
+                  style={{ width: "200px", marginRight: "0.5em" }}
+                />
+                <button onClick={() => handleReviewSubmit(movie.id)}>
+                  Submit Review
+                </button>
+                {reviewStatus[movie.id] && (
+                  <span style={{ marginLeft: "1em", color: reviewStatus[movie.id] === "Review submitted!" ? "green" : "red" }}>
+                    {reviewStatus[movie.id]}
+                  </span>
+                )}
+              </div>
             </div>
           </li>
         ))}

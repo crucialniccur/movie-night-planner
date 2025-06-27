@@ -189,7 +189,8 @@ api.add_resource(EventList, '/events')
 api.add_resource(EventByID, '/events/<int:id>')
 api.add_resource(ReviewList, '/reviews')
 api.add_resource(UserEventList, '/user_events')
-api.add_resource(UserMovieResource, '/favorite/<int:movie_id>', endpoint='favorite')
+api.add_resource(UserMovieResource,
+                 '/favorite/<int:movie_id>', endpoint='favorite')
 
 
 # Run the Flask server

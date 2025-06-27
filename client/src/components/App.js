@@ -1,12 +1,9 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import NavBar from "./NavBar";
-import MovieList from "./MovieList";
-import ReviewForm from "./ReviewForm";
-import Home from "./Home";
+import Movies from "./Movies";
 import Login from "./Login";
 import Logout from "./Logout";
-import ReviewList from "./ReviewList";
 import Favorites from "./Favorites";
 
 function App() {
@@ -14,10 +11,8 @@ function App() {
     <Router>
       <NavBar />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/movies" element={<MovieList />} />
-        <Route path="/reviews" element={<ReviewForm />} />
-        <Route path="/reviews/list" element={<ReviewList />} />
+        <Route path="/" element={<Movies />} />
+        <Route path="/movies" element={<Movies />} />
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
         <Route path="/favorites" element={<Favorites />} />

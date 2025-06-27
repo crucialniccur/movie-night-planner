@@ -16,15 +16,10 @@ function NavBar() {
 
   return (
     <nav>
-      <Link to="/">Home</Link> |<Link to="/movies">Movies</Link> |
-      <Link to="/reviews">Submit Review</Link> |
-      <Link to="/reviews/list">View Reviews</Link> |
+      <Link to="/">Home</Link> | <Link to="/movies">Movies</Link> |
+      <Link to="/favorites">Favorites</Link> |
       {isLoggedIn ? (
-        <>
-          <Link to="/favorites">Favorites</Link> |
-          <Link to="/reviews/list">My Reviews</Link> |
-          <Link to="/logout">Logout</Link>
-        </>
+        <Link to="/logout">Logout</Link>
       ) : (
         <Link to="/login">Login</Link>
       )}

@@ -67,8 +67,13 @@ function Movies() {
     })
       .then((res) => res.json())
       .then((data) => {
-        fetchFavorites();
-        notifyFavoritesUpdate();
+        if (
+          data.message === "Movie favorited" ||
+          data.message === "Movie removed from favorites"
+        ) {
+          fetchFavorites();
+          notifyFavoritesUpdate();
+        }
       })
       .catch((err) => console.error("Favorite error:", err))
       .finally(() => setFavLoading((prev) => ({ ...prev, [movieId]: false })));
@@ -142,23 +147,14 @@ function Movies() {
                   <button
                     onClick={() => handleFavorite(movie.id)}
                     disabled={favLoading[movie.id]}
-                    style={{
-                      background: isFav ? "#222" : "#d32f2f",
-                      color: "#fff",
-                      border: isFav ? "2px solid #d32f2f" : "none",
-                      boxShadow: "0 0 8px #d32f2f",
-                      marginBottom: "10px",
-                      cursor: favLoading[movie.id] ? "not-allowed" : "pointer",
-                      fontWeight: "bold",
-                      borderRadius: "6px",
-                      padding: "8px 18px",
-                      transition: "all 0.2s",
-                    }}
+                    className={
+                      isFav ? "favorite-button favorited" : "favorite-button"
+                    }
                   >
                     {isFav ? "Favorited ✓" : "Favorite"}
                   </button>
                 )}
-                <div>
+                <div className="reviews-section">
                   <h4>Reviews:</h4>
                   {reviewsByMovie[movie.id] &&
                   reviewsByMovie[movie.id].length > 0 ? (

@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+const API_URL = process.env.REACT_APP_API_URL || "";
+
 function Home() {
   const [trendingMovies, setTrendingMovies] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,13 +32,13 @@ function Home() {
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
     if (userId) {
-      fetch("/api/favorites", { headers: { "Content-Type": "application/json" }, credentials: "include" })
+      fetch(`${API_URL}/api/favorites`, { headers: { "Content-Type": "application/json" }, credentials: "include" })
         .then((res) => res.json())
         .then((data) => setFavoritedIds(data.map((fav) => fav.movie_id)))
         .catch(() => {});
     }
     // Fetch all reviews and group by movie_id
-    fetch("/api/reviews")
+    fetch(`${API_URL}/api/reviews`)
       .then((res) => res.json())
       .then((allReviews) => {
         const grouped = {};
@@ -50,7 +52,7 @@ function Home() {
   }, [apiKey, userId]);
 
   const handleFavorite = (movieId) => {
-    fetch(`/api/favorites/${movieId}`, {
+    fetch(`${API_URL}/api/favorites/${movieId}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include"

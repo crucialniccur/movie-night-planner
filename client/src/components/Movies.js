@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
+const API_URL = process.env.REACT_APP_API_URL || "";
+
 function Movies() {
   const [movies, setMovies] = useState([]);
   const [favorites, setFavorites] = useState([]);
@@ -16,7 +18,7 @@ function Movies() {
 
   const fetchFavorites = () => {
     if (userId) {
-      fetch("/api/favorites")
+      fetch(`${API_URL}/api/favorites`)
         .then((res) => res.json())
         .then((data) => setFavorites(data.map((f) => f.movie_id)))
         .catch((err) => console.error("Error fetching favorites:", err));
@@ -46,7 +48,7 @@ function Movies() {
     async function fetchReviews() {
       const reviewsObj = {};
       for (let movie of movies) {
-        const res = await fetch(`/api/reviews/movie/${movie.id}`);
+        const res = await fetch(`${API_URL}/api/reviews/movie/${movie.id}`);
         reviewsObj[movie.id] = res.ok ? await res.json() : [];
       }
       setReviewsByMovie(reviewsObj);
@@ -62,7 +64,7 @@ function Movies() {
     const isFav = favorites.includes(movieId);
     if (isFav) return;
     setFavLoading({ ...favLoading, [movieId]: true });
-    fetch(`/api/favorites/${movieId}`, {
+    fetch(`${API_URL}/api/favorites/${movieId}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
     })
@@ -94,7 +96,7 @@ function Movies() {
       return;
     }
     setReviewError({ ...reviewError, [movieId]: null });
-    fetch("/api/reviews", {
+    fetch(`${API_URL}/api/reviews`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -110,7 +112,7 @@ function Movies() {
         else {
           setReviewContent({ ...reviewContent, [movieId]: "" });
           setReviewRating({ ...reviewRating, [movieId]: 1 });
-          fetch(`/api/reviews/movie/${movieId}`)
+          fetch(`${API_URL}/api/reviews/movie/${movieId}`)
             .then((res) => res.json())
             .then((reviews) =>
               setReviewsByMovie({ ...reviewsByMovie, [movieId]: reviews })

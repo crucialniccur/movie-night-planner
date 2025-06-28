@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+const API_URL = process.env.REACT_APP_API_URL || "";
+
 function Favorites() {
   const [favorites, setFavorites] = useState([]);
   const [movies, setMovies] = useState([]);
@@ -13,7 +15,7 @@ function Favorites() {
   const fetchFavorites = () => {
     if (userId) {
       setLoading(true);
-      fetch("/api/favorites", { headers: { "Content-Type": "application/json" } })
+      fetch(`${API_URL}/api/favorites`, { headers: { "Content-Type": "application/json" } })
         .then((res) => {
           if (!res.ok) throw new Error("Failed to fetch favorites");
           return res.json();
@@ -55,7 +57,7 @@ function Favorites() {
   }, [userId]);
 
   const handleRemoveFavorite = (movieId) => {
-    fetch(`/api/favorites/${movieId}`, {
+    fetch(`${API_URL}/api/favorites/${movieId}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       credentials: "include"
@@ -86,7 +88,7 @@ function Favorites() {
       setReviewStatus((prev) => ({ ...prev, [movieId]: "Please fill all fields." }));
       return;
     }
-    fetch("/api/reviews", {
+    fetch(`${API_URL}/api/reviews`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",

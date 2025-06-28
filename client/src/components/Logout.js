@@ -1,10 +1,12 @@
 import { useNavigate } from "react-router-dom";
 
+const API_URL = process.env.REACT_APP_API_URL || "";
+
 function Logout() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    fetch("/logout", {
+    fetch(`${API_URL}/api/logout`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
     })

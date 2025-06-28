@@ -16,7 +16,7 @@ function Movies() {
 
   const fetchFavorites = () => {
     if (userId) {
-      fetch("/favorites")
+      fetch("/api/favorites")
         .then((res) => res.json())
         .then((data) => setFavorites(data.map((f) => f.movie_id)))
         .catch((err) => console.error("Error fetching favorites:", err));
@@ -46,7 +46,7 @@ function Movies() {
     async function fetchReviews() {
       const reviewsObj = {};
       for (let movie of movies) {
-        const res = await fetch(`/reviews/${movie.id}`);
+        const res = await fetch(`/api/reviews/movie/${movie.id}`);
         reviewsObj[movie.id] = res.ok ? await res.json() : [];
       }
       setReviewsByMovie(reviewsObj);
@@ -59,19 +59,17 @@ function Movies() {
 
   const handleFavorite = (movieId) => {
     if (favLoading[movieId]) return;
-    setFavLoading({ ...favLoading, [movieId]: true });
     const isFav = favorites.includes(movieId);
-    fetch(`/favorite/${movieId}`, {
-      method: isFav ? "DELETE" : "POST",
+    if (isFav) return;
+    setFavLoading({ ...favLoading, [movieId]: true });
+    fetch(`/api/favorites/${movieId}`, {
+      method: "POST",
       headers: { "Content-Type": "application/json" },
     })
       .then((res) => res.json())
       .then((data) => {
-        if (
-          data.message === "Movie favorited" ||
-          data.message === "Movie removed from favorites"
-        ) {
-          fetchFavorites();
+        if (data.id || data.message === "Movie favorited") {
+          setFavorites((prev) => [...prev, movieId]);
           notifyFavoritesUpdate();
         }
       })
@@ -96,7 +94,7 @@ function Movies() {
       return;
     }
     setReviewError({ ...reviewError, [movieId]: null });
-    fetch("/reviews", {
+    fetch("/api/reviews", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -112,7 +110,7 @@ function Movies() {
         else {
           setReviewContent({ ...reviewContent, [movieId]: "" });
           setReviewRating({ ...reviewRating, [movieId]: 1 });
-          fetch(`/reviews/${movieId}`)
+          fetch(`/api/reviews/movie/${movieId}`)
             .then((res) => res.json())
             .then((reviews) =>
               setReviewsByMovie({ ...reviewsByMovie, [movieId]: reviews })
@@ -146,7 +144,7 @@ function Movies() {
                 {userId && (
                   <button
                     onClick={() => handleFavorite(movie.id)}
-                    disabled={favLoading[movie.id]}
+                    disabled={isFav || favLoading[movie.id]}
                     className={
                       isFav ? "favorite-button favorited" : "favorite-button"
                     }

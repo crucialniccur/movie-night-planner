@@ -30,13 +30,13 @@ function Home() {
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
     if (userId) {
-      fetch("/favorites", { headers: { "Content-Type": "application/json" }, credentials: "include" })
+      fetch("/api/favorites", { headers: { "Content-Type": "application/json" }, credentials: "include" })
         .then((res) => res.json())
         .then((data) => setFavoritedIds(data.map((fav) => fav.movie_id)))
         .catch(() => {});
     }
     // Fetch all reviews and group by movie_id
-    fetch("/all-reviews")
+    fetch("/api/reviews")
       .then((res) => res.json())
       .then((allReviews) => {
         const grouped = {};
@@ -50,7 +50,7 @@ function Home() {
   }, [apiKey, userId]);
 
   const handleFavorite = (movieId) => {
-    fetch(`/favorite/${movieId}`, {
+    fetch(`/api/favorites/${movieId}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include"

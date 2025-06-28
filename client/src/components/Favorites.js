@@ -13,7 +13,7 @@ function Favorites() {
   const fetchFavorites = () => {
     if (userId) {
       setLoading(true);
-      fetch("/favorites", { headers: { "Content-Type": "application/json" } })
+      fetch("/api/favorites", { headers: { "Content-Type": "application/json" } })
         .then((res) => {
           if (!res.ok) throw new Error("Failed to fetch favorites");
           return res.json();
@@ -55,7 +55,7 @@ function Favorites() {
   }, [userId]);
 
   const handleRemoveFavorite = (movieId) => {
-    fetch(`/favorite/${movieId}`, {
+    fetch(`/api/favorites/${movieId}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       credentials: "include"
@@ -86,7 +86,7 @@ function Favorites() {
       setReviewStatus((prev) => ({ ...prev, [movieId]: "Please fill all fields." }));
       return;
     }
-    fetch("/reviews", {
+    fetch("/api/reviews", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",

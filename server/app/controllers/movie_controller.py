@@ -88,7 +88,6 @@ class ReviewList(Resource):
         return {'message': 'Review deleted'}, 200
 
 class ReviewByMovie(Resource):
-    @login_required
     def get(self, movie_id):
         reviews = Review.query.filter_by(movie_id=movie_id).all()
         return [r.to_dict(only=('id', 'content', 'rating', 'user_id', 'movie_id')) for r in reviews], 200

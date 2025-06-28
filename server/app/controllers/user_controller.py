@@ -49,6 +49,10 @@ def check_session():
             return {'user_id': user_id, 'username': user.username}, 200
     return {'user_id': None, 'username': None}, 200
 
+@user_bp.route('/api/debug-session')
+def debug_session():
+    return {'user_id': session.get('user_id', None)}, 200
+
 api.add_resource(Login, '/api/login')
 api.add_resource(Logout, '/api/logout')
 api.add_resource(UserList, '/api/users')

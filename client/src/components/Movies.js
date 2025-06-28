@@ -19,10 +19,17 @@ function Movies() {
   useEffect(() => {
     const fetchFavorites = () => {
       if (userId) {
-        fetch(`${API_URL}/api/favorites`)
+        fetch(`${API_URL}/api/favorites`, { credentials: "include" })
           .then((res) => res.json())
-          .then((data) => setFavorites(data.map((f) => f.movie_id)))
-          .catch((err) => console.error("Error fetching favorites:", err));
+          .then((data) => {
+            if (!Array.isArray(data)) return [];
+            return data.map((f) => f.movie_id);
+          })
+          .then((ids) => setFavorites(ids))
+          .catch((err) => {
+            setFavorites([]);
+            console.error("Error fetching favorites:", err);
+          });
       }
     };
     setLoading(true);

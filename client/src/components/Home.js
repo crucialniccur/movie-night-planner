@@ -6,8 +6,6 @@ function Home() {
   const [trendingMovies, setTrendingMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [favoritedIds, setFavoritedIds] = useState([]);
-  const [reviewsByMovie, setReviewsByMovie] = useState({});
   const apiKey = "a4cd64db16ded6df2896cccfb552989a";
   const userId = sessionStorage.getItem("user_id");
 
@@ -28,39 +26,9 @@ function Home() {
     if (userId) {
       fetch(`${API_URL}/api/favorites`, { headers: { "Content-Type": "application/json" }, credentials: "include" })
         .then((res) => res.json())
-        .then((data) => setFavoritedIds(data.map((fav) => fav.movie_id)))
         .catch(() => {});
     }
-    // Fetch all reviews and group by movie_id
-    fetch(`${API_URL}/api/reviews`)
-      .then((res) => res.json())
-      .then((allReviews) => {
-        const grouped = {};
-        allReviews.forEach((review) => {
-          if (!grouped[review.movie_id]) grouped[review.movie_id] = [];
-          grouped[review.movie_id].push(review);
-        });
-        setReviewsByMovie(grouped);
-      })
-      .catch(() => {});
   }, [apiKey, userId]);
-
-  const handleFavorite = (movieId) => {
-    fetch(`${API_URL}/api/favorites/${movieId}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include"
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to favorite movie");
-        return res.json();
-      })
-      .then(() => {
-        setFavoritedIds((prev) => [...prev, movieId]);
-        window.dispatchEvent(new Event("favorites-updated"));
-      })
-      .catch((err) => alert(err.message));
-  };
 
   if (loading)
     return <div className="container">Loading trending movies...</div>;

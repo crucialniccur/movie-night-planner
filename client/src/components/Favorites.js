@@ -12,49 +12,48 @@ function Favorites() {
   const apiKey = "a4cd64db16ded6df2896cccfb552989a";
   const userId = sessionStorage.getItem("user_id");
 
-  const fetchFavorites = () => {
-    if (userId) {
-      setLoading(true);
-      fetch(`${API_URL}/api/favorites`, { headers: { "Content-Type": "application/json" } })
-        .then((res) => {
-          if (!res.ok) throw new Error("Failed to fetch favorites");
-          return res.json();
-        })
-        .then((data) => {
-          setFavorites(data);
-          return data.map((fav) => fav.movie_id);
-        })
-        .then((movieIds) => {
-          if (movieIds.length > 0) {
-            return Promise.all(
-              movieIds.map((id) =>
-                fetch(
-                  `https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}`
-                )
-                  .then((res) => res.json())
-                  .then((movie) => ({
-                    ...movie,
-                    favorite_date: favorites.find(
-                      (f) => f.movie_id === movie.id
-                    )?.favorite_date,
-                  }))
-              )
-            );
-          }
-          return [];
-        })
-        .then((fetchedMovies) => setMovies(fetchedMovies))
-        .catch((err) => setError(err.message))
-        .finally(() => setLoading(false));
-    }
-  };
-
   useEffect(() => {
+    const fetchFavorites = () => {
+      if (userId) {
+        setLoading(true);
+        fetch(`${API_URL}/api/favorites`, { headers: { "Content-Type": "application/json" } })
+          .then((res) => {
+            if (!res.ok) throw new Error("Failed to fetch favorites");
+            return res.json();
+          })
+          .then((data) => {
+            setFavorites(data);
+            return data.map((fav) => fav.movie_id);
+          })
+          .then((movieIds) => {
+            if (movieIds.length > 0) {
+              return Promise.all(
+                movieIds.map((id) =>
+                  fetch(
+                    `https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}`
+                  )
+                    .then((res) => res.json())
+                    .then((movie) => ({
+                      ...movie,
+                      favorite_date: favorites.find(
+                        (f) => f.movie_id === movie.id
+                      )?.favorite_date,
+                    }))
+                )
+              );
+            }
+            return [];
+          })
+          .then((fetchedMovies) => setMovies(fetchedMovies))
+          .catch((err) => setError(err.message))
+          .finally(() => setLoading(false));
+      }
+    };
     fetchFavorites();
     const handler = () => fetchFavorites();
     window.addEventListener("favorites-updated", handler);
     return () => window.removeEventListener("favorites-updated", handler);
-  }, [userId, fetchFavorites]);
+  }, [userId]);
 
   const handleRemoveFavorite = (movieId) => {
     fetch(`${API_URL}/api/favorites/${movieId}`, {

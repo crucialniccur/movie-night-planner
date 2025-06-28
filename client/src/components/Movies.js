@@ -16,16 +16,15 @@ function Movies() {
   const apiKey = "a4cd64db16ded6df2896cccfb552989a";
   const userId = sessionStorage.getItem("user_id");
 
-  const fetchFavorites = () => {
-    if (userId) {
-      fetch(`${API_URL}/api/favorites`)
-        .then((res) => res.json())
-        .then((data) => setFavorites(data.map((f) => f.movie_id)))
-        .catch((err) => console.error("Error fetching favorites:", err));
-    }
-  };
-
   useEffect(() => {
+    const fetchFavorites = () => {
+      if (userId) {
+        fetch(`${API_URL}/api/favorites`)
+          .then((res) => res.json())
+          .then((data) => setFavorites(data.map((f) => f.movie_id)))
+          .catch((err) => console.error("Error fetching favorites:", err));
+      }
+    };
     setLoading(true);
     setError(null);
     fetch(
@@ -42,7 +41,7 @@ function Movies() {
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
     fetchFavorites();
-  }, [apiKey, userId, fetchFavorites]);
+  }, [apiKey, userId]);
 
   useEffect(() => {
     async function fetchReviews() {

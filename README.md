@@ -1,5 +1,9 @@
 # Movie Night Planner
 
+[Live App on Netlify](https://matis-movie-planner.netlify.app/)
+
+---
+
 Movie Night Planner is a full-stack web application that allows users to discover trending movies, favorite them, leave reviews, and plan movie nights with friends. The app uses React for the frontend and Flask (with SQLAlchemy and PostgreSQL) for the backend.
 
 ## Features

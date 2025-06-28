@@ -46,9 +46,14 @@ function NavBar() {
             </li>
           </>
         ) : (
-          <li>
-            <Link to="/login" style={{ color: "#FFD700", textDecoration: "none", fontWeight: "bold" }}>Login</Link>
-          </li>
+          <>
+            <li>
+              <Link to="/login" style={{ color: "#FFD700", textDecoration: "none", fontWeight: "bold" }}>Login</Link>
+            </li>
+            <li>
+              <Link to="/signup" style={{ color: "#FFD700", textDecoration: "none", fontWeight: "bold" }}>Sign Up</Link>
+            </li>
+          </>
         )}
       </ul>
     </nav>

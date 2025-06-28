@@ -6,6 +6,7 @@ import Login from "./Login";
 import Logout from "./Logout";
 import Favorites from "./Favorites";
 import Movies from "./Movies"; // Re-import Movies
+import Signup from "./Signup";
 
 function ErrorPage({ children }) {
   return <div className="error">{children}</div>;
@@ -21,6 +22,7 @@ function App() {
         <Route path="/logout" element={<Logout />} />
         <Route path="/favorites" element={<Favorites />} />
         <Route path="/movies" element={<Movies />} /> {/* Re-add this route */}
+        <Route path="/signup" element={<Signup />} />
       </Routes>
     </Router>
   );

@@ -17,11 +17,9 @@ function Login() {
       credentials: "include",
       body: JSON.stringify({ username, password }),
     })
-      .then((res) => {
-        if (!res.ok) throw new Error("Login failed");
-        return res.json();
-      })
-      .then((data) => {
+      .then((res) => res.json().then(data => ({ ok: res.ok, data })))
+      .then(({ ok, data }) => {
+        if (!ok) throw new Error(data.error || "Login failed");
         if (data.id) {
           sessionStorage.setItem("user_id", data.id); // Store user_id
           window.dispatchEvent(new Event("login"));

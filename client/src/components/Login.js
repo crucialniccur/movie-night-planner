@@ -14,6 +14,7 @@ function Login() {
     fetch(`${API_URL}/api/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ username, password }),
     })
       .then((res) => {

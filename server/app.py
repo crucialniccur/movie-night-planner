@@ -3,9 +3,10 @@
 # Standard library imports
 from datetime import datetime
 import traceback
+import os
 
 # Remote library imports
-from flask import request, session, render_template
+from flask import request, session, render_template, send_from_directory
 from flask_restful import Resource
 
 # Local imports
@@ -269,9 +270,23 @@ api.add_resource(UserMovieResource,
                  '/favorite/<int:movie_id>', endpoint='favorite')
 api.add_resource(UserFavoritesResource, '/favorites', endpoint='favorites')
 
+# Serve React static files (client/build) for all non-API routes
+REACT_BUILD_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../client/build')
+
+@app.route("/", defaults={"path": ""})
+@app.route("/<path:path>")
+def serve(path):
+    # Serve static files from React build
+    build_dir = os.path.abspath(REACT_BUILD_DIR)
+    if path != "" and os.path.exists(os.path.join(build_dir, path)):
+        return send_from_directory(build_dir, path)
+    else:
+        return send_from_directory(build_dir, "index.html")
+
 @app.errorhandler(404)
 def not_found(e):
-    return render_template("index.html")
+    build_dir = os.path.abspath(REACT_BUILD_DIR)
+    return send_from_directory(build_dir, "index.html")
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

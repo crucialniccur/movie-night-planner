@@ -99,4 +99,16 @@ function Home() {
           {trendingMovies.map((movie) => (
             <li key={movie.id} className="event-card">
               <img
-                src={`
+                src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                alt={movie.title}
+                className="event-poster"
+              />
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+export default Home;

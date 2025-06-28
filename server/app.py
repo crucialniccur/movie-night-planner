@@ -5,7 +5,7 @@ from datetime import datetime
 import traceback
 
 # Remote library imports
-from flask import request, session
+from flask import request, session, render_template
 from flask_restful import Resource
 
 # Local imports
@@ -268,6 +268,10 @@ api.add_resource(UserEventList, '/user_events')
 api.add_resource(UserMovieResource,
                  '/favorite/<int:movie_id>', endpoint='favorite')
 api.add_resource(UserFavoritesResource, '/favorites', endpoint='favorites')
+
+@app.errorhandler(404)
+def not_found(e):
+    return render_template("index.html")
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

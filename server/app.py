@@ -271,7 +271,7 @@ api.add_resource(UserMovieResource,
 api.add_resource(UserFavoritesResource, '/favorites', endpoint='favorites')
 
 # Serve React static files (client/build) for all non-API routes
-REACT_BUILD_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), '../client/build')
+REACT_BUILD_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'client', 'build'))
 
 @app.route("/", defaults={"path": ""})
 @app.route("/<path:path>")

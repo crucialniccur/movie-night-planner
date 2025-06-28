@@ -10,12 +10,6 @@ function Home() {
   const [reviewsByMovie, setReviewsByMovie] = useState({});
   const apiKey = "a4cd64db16ded6df2896cccfb552989a";
   const userId = sessionStorage.getItem("user_id");
-  const username = userId
-    ? fetch("/check-session", { credentials: "include" })
-        .then((res) => res.json())
-        .then((data) => (data.user_id ? "User" : null))
-        .catch(() => null)
-    : null;
 
   useEffect(() => {
     setLoading(true);
@@ -105,58 +99,4 @@ function Home() {
           {trendingMovies.map((movie) => (
             <li key={movie.id} className="event-card">
               <img
-                src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                alt={movie.title}
-                className="event-poster"
-              />
-              <div>
-                <h3>{movie.title}</h3>
-                <p>Release Date: {movie.release_date}</p>
-                {userId && (
-                  <button
-                    onClick={() => handleFavorite(movie.id)}
-                    disabled={favoritedIds.includes(movie.id)}
-                  >
-                    {favoritedIds.includes(movie.id) ? "Favorited" : "Favorite"}
-                  </button>
-                )}
-                {/* Show reviews for this movie */}
-                {reviewsByMovie[movie.id] && reviewsByMovie[movie.id].length > 0 && (
-                  <div className="movie-reviews" style={{ marginTop: "1em" }}>
-                    <h4>Reviews:</h4>
-                    <ul>
-                      {reviewsByMovie[movie.id].map((review) => (
-                        <li key={review.id}>
-                          <strong>{review.username}:</strong> <strong>Rating:</strong> {review.rating} <br />
-                          <span>{review.content}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div className="quick-links">
-        {userId ? (
-          <>
-            <a href="/favorites" className="quick-link">
-              Go to Favorites
-            </a>
-            <a href="/logout" className="quick-link">
-              Logout
-            </a>
-          </>
-        ) : (
-          <a href="/login" className="quick-link">
-            Login
-          </a>
-        )}
-      </div>
-    </div>
-  );
-}
-
-export default Home;
+                src={`

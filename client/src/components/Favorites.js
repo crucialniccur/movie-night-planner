@@ -54,7 +54,7 @@ function Favorites() {
     const handler = () => fetchFavorites();
     window.addEventListener("favorites-updated", handler);
     return () => window.removeEventListener("favorites-updated", handler);
-  }, [userId]);
+  }, [userId, fetchFavorites]);
 
   const handleRemoveFavorite = (movieId) => {
     fetch(`${API_URL}/api/favorites/${movieId}`, {

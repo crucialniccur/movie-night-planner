@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 
 const API_URL = process.env.REACT_APP_API_URL || "";
 
@@ -42,7 +42,7 @@ function Movies() {
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
     fetchFavorites();
-  }, [apiKey, userId]);
+  }, [apiKey, userId, fetchFavorites]);
 
   useEffect(() => {
     async function fetchReviews() {

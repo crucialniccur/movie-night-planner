@@ -8,10 +8,6 @@ import Favorites from "./Favorites";
 import Movies from "./Movies"; // Re-import Movies
 import Signup from "./Signup";
 
-function ErrorPage({ children }) {
-  return <div className="error">{children}</div>;
-}
-
 function App() {
   return (
     <Router>

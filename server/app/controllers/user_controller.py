@@ -42,7 +42,12 @@ class UserList(Resource):
 
 @user_bp.route('/check-session')
 def check_session():
-    return {'user_id': session.get('user_id', None)}, 200
+    user_id = session.get('user_id', None)
+    if user_id:
+        user = User.query.get(user_id)
+        if user:
+            return {'user_id': user_id, 'username': user.username}, 200
+    return {'user_id': None, 'username': None}, 200
 
 api.add_resource(Login, '/api/login')
 api.add_resource(Logout, '/api/logout')

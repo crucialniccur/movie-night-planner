@@ -17,6 +17,7 @@ function Logout() {
       .then((data) => {
         console.log(data.message);
         sessionStorage.removeItem("user_id"); // Clear client-side storage
+        window.dispatchEvent(new Event("logout"));
         navigate("/login"); // Redirect to login
       })
       .catch((error) => console.error("Error:", error));

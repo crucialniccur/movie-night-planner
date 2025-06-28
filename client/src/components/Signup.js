@@ -23,6 +23,7 @@ function Signup() {
       .then((data) => {
         if (data.id) {
           sessionStorage.setItem("user_id", data.id); // Store user_id
+          window.dispatchEvent(new Event("login"));
           navigate("/movies"); // Redirect to movies page
         } else {
           throw new Error("Invalid response");

@@ -1,7 +1,35 @@
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+
+const API_URL = process.env.REACT_APP_API_URL || "";
 
 function NavBar() {
-  const userId = sessionStorage.getItem("user_id");
+  const [username, setUsername] = useState(null);
+
+  useEffect(() => {
+    // Fetch session info on mount and when login/logout events happen
+    const fetchSession = () => {
+      fetch(`${API_URL}/check-session`, { credentials: "include" })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.user_id) {
+            setUsername(data.username);
+            sessionStorage.setItem("user_id", data.user_id);
+          } else {
+            setUsername(null);
+            sessionStorage.removeItem("user_id");
+          }
+        })
+        .catch(() => setUsername(null));
+    };
+    fetchSession();
+    window.addEventListener("login", fetchSession);
+    window.addEventListener("logout", fetchSession);
+    return () => {
+      window.removeEventListener("login", fetchSession);
+      window.removeEventListener("logout", fetchSession);
+    };
+  }, []);
 
   return (
     <nav
@@ -36,8 +64,9 @@ function NavBar() {
         <li>
           <Link to="/movies" style={{ color: "#FFD700", textDecoration: "none", fontWeight: "bold" }}>Movies</Link>
         </li>
-        {userId ? (
+        {username ? (
           <>
+            <li style={{ color: "#FFD700", fontWeight: "bold" }}>Hi, {username}!</li>
             <li>
               <Link to="/favorites" style={{ color: "#FFD700", textDecoration: "none", fontWeight: "bold" }}>Favorites</Link>
             </li>

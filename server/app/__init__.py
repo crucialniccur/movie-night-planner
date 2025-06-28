@@ -19,12 +19,12 @@ def create_app():
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev")
-    app.json.compact = False
 
     db.init_app(app)
     migrate.init_app(app, db)
     bcrypt.init_app(app)
-    CORS(app)
+    # Allow credentials and specify allowed origins for CORS using regex
+    CORS(app, supports_credentials=True, origins=r"https?://(localhost:3000|movie-night-frontend-3f7p.onrender.com)")
 
     # Import and register blueprints
     from .controllers.movie_controller import movie_bp

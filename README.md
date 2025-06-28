@@ -34,9 +34,7 @@ Movie Night Planner is a full-stack web application that allows users to discove
    ```
 3. **Install Python dependencies:**
    ```sh
-   pip install -r requirements.txt
-   # or if using pipenv:
-   pipenv install
+   pip install -r server/requirements.txt
    ```
 4. **Configure environment variables:**
    - Create a `.env` file in the `server/` directory (optional, if using env vars):
@@ -90,7 +88,7 @@ Movie Night Planner is a full-stack web application that allows users to discove
 ## Deployment
 - Set all environment variables in your deployment platform (do not commit secrets to git)
 - Ensure your production database is set up and migrated
-- Use `pip install -r requirements.txt` and `npm install` on your server
+- Use `pip install -r server/requirements.txt` and `npm install` on your server
 
 ## Troubleshooting
 - If you see `relation "users" does not exist`, run migrations with `flask db upgrade`.

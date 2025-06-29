@@ -34,13 +34,6 @@ function NavBar() {
     };
   }, []);
 
-  // Close menu on route change (optional, for better UX)
-  useEffect(() => {
-    const closeMenu = () => setMenuOpen(false);
-    window.addEventListener("popstate", closeMenu);
-    return () => window.removeEventListener("popstate", closeMenu);
-  }, []);
-
   return (
     <nav className="navbar horizontal-navbar">
       <div className="navbar-brand">

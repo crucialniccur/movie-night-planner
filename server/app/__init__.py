@@ -26,9 +26,13 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
     bcrypt.init_app(app)
-    # Allow credentials and specify allowed origins for CORS using regex
-    CORS(app, supports_credentials=True,
-         origins=r"https?://(localhost:3000|movie-night-frontend-3f7p.onrender.com|matis-movie-planner.netlify.app)")
+    # Use a list of allowed origins for CORS (recommended for cross-site cookies)
+    CORS(app, supports_credentials=True, origins=[
+        "http://localhost:3000",
+        "https://matis-movie-planner.netlify.app"
+    ])
+    # For debugging only, you can temporarily use:
+    # CORS(app, supports_credentials=True, origins="*")
 
     # Import and register blueprints
     from .controllers.movie_controller import movie_bp

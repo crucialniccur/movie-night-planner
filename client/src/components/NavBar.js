@@ -40,20 +40,8 @@ function NavBar() {
   }, []);
 
   return (
-    <nav
-      className="navbar"
-      style={{
-        background: "#222",
-        color: "#FFD700",
-        padding: "0.7em 2em",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-        marginBottom: "2em",
-      }}
-    >
-      <div style={{ fontWeight: "bold", fontSize: "1.5em", color: "#FFD700", letterSpacing: "1px" }}>
+    <nav className="navbar">
+      <div className="navbar-brand">
         <span role="img" aria-label="movie">🎬</span> Movie Night
       </div>
       <button
@@ -67,28 +55,28 @@ function NavBar() {
       </button>
       <ul className={`nav-links${menuOpen ? " open" : ""}`}>
         <li>
-          <Link to="/" onClick={() => setMenuOpen(false)} style={{ color: "#FFD700", textDecoration: "none", fontWeight: "bold" }}>Home</Link>
+          <Link to="/" onClick={() => setMenuOpen(false)} className="nav-link">Home</Link>
         </li>
         <li>
-          <Link to="/movies" onClick={() => setMenuOpen(false)} style={{ color: "#FFD700", textDecoration: "none", fontWeight: "bold" }}>Movies</Link>
+          <Link to="/movies" onClick={() => setMenuOpen(false)} className="nav-link">Movies</Link>
         </li>
         {username ? (
           <>
-            <li style={{ color: "#FFD700", fontWeight: "bold" }}>Hi, {username}!</li>
+            <li className="nav-user">Hi, {username}!</li>
             <li>
-              <Link to="/favorites" onClick={() => setMenuOpen(false)} style={{ color: "#FFD700", textDecoration: "none", fontWeight: "bold" }}>Favorites</Link>
+              <Link to="/favorites" onClick={() => setMenuOpen(false)} className="nav-link">Favorites</Link>
             </li>
             <li>
-              <Link to="/logout" onClick={() => setMenuOpen(false)} style={{ color: "#FFD700", textDecoration: "none", fontWeight: "bold" }}>Logout</Link>
+              <Link to="/logout" onClick={() => setMenuOpen(false)} className="nav-link">Logout</Link>
             </li>
           </>
         ) : (
           <>
             <li>
-              <Link to="/login" onClick={() => setMenuOpen(false)} style={{ color: "#FFD700", textDecoration: "none", fontWeight: "bold" }}>Login</Link>
+              <Link to="/login" onClick={() => setMenuOpen(false)} className="nav-link">Login</Link>
             </li>
             <li>
-              <Link to="/signup" onClick={() => setMenuOpen(false)} style={{ color: "#FFD700", textDecoration: "none", fontWeight: "bold" }}>Sign Up</Link>
+              <Link to="/signup" onClick={() => setMenuOpen(false)} className="nav-link">Sign Up</Link>
             </li>
           </>
         )}

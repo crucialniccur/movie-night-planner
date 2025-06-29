@@ -362,3 +362,65 @@ li {
     position: relative;
   }
 }
+
+.navbar-brand {
+  font-weight: bold;
+  font-size: 1.5em;
+  color: #FFD700;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.nav-link {
+  color: #FFD700;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 0.7em 1.5em;
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+  display: block;
+  margin: 0.3em 0;
+}
+
+.nav-link:hover {
+  background: #FFD700;
+  color: #222;
+}
+
+.nav-user {
+  color: #FFD700;
+  font-weight: bold;
+  margin: 0.5em 0;
+  padding: 0.7em 1.5em;
+  border-radius: 8px;
+  background: #232323;
+  display: block;
+}
+
+.trending-section .event-card {
+  flex-direction: row;
+  align-items: flex-start;
+  min-height: 200px;
+}
+
+.trending-section .event-card > div {
+  flex: 1;
+  padding-left: 1em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.trending-section .event-card h3 {
+  margin: 0 0 0.5em 0;
+  color: #FFD700;
+  font-size: 1.2em;
+}
+
+.trending-section .event-card p {
+  color: #fff;
+  margin: 0 0 0.5em 0;
+  font-size: 1em;
+}

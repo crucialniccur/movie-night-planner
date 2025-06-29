@@ -71,6 +71,11 @@ function Home() {
                 alt={movie.title}
                 className="event-poster"
               />
+              <div>
+                <h3>{movie.title}</h3>
+                <p><strong>Release Date:</strong> {movie.release_date}</p>
+                <p style={{ color: '#FFD700' }}>{movie.overview ? movie.overview.slice(0, 120) + (movie.overview.length > 120 ? '...' : '') : 'No description available.'}</p>
+              </div>
             </li>
           ))}
         </ul>

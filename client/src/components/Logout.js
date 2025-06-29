@@ -9,6 +9,7 @@ function Logout() {
     fetch(`${API_URL}/api/logout`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include"
     })
       .then((res) => {
         if (!res.ok) throw new Error("Logout failed");

@@ -16,7 +16,7 @@ function Favorites() {
     const fetchFavorites = () => {
       if (userId) {
         setLoading(true);
-        fetch(`${API_URL}/api/favorites`, { headers: { "Content-Type": "application/json" } })
+        fetch(`${API_URL}/api/favorites`, { headers: { "Content-Type": "application/json" }, credentials: "include" })
           .then((res) => {
             if (!res.ok) throw new Error("Failed to fetch favorites");
             return res.json();

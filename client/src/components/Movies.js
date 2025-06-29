@@ -73,6 +73,7 @@ function Movies() {
     fetch(`${API_URL}/api/favorites/${movieId}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include"
     })
       .then((res) => res.json())
       .then((data) => {
@@ -105,6 +106,7 @@ function Movies() {
     fetch(`${API_URL}/api/reviews`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({
         content: reviewContent[movieId] || "",
         rating: reviewRating[movieId] || 1,

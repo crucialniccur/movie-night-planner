@@ -511,10 +511,11 @@ li {
 }
 
 .favorites-grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 32px;
-  justify-content: center;
+  justify-items: center;
+  align-items: stretch;
   padding: 0;
   margin: 0 auto;
   max-width: 1600px;
@@ -522,15 +523,17 @@ li {
 }
 
 .favorites-grid .event-card {
-  flex: 1 1 480px;
-  min-width: 340px;
-  max-width: 600px;
+  width: 100%;
+  max-width: 400px;
+  min-width: 260px;
   margin: 0;
   padding: 2em 2em 2em 2em;
   box-sizing: border-box;
   display: flex;
+  flex-direction: row;
   gap: 1.5em;
   align-items: flex-start;
+  height: 100%;
 }
 
 .favorites-grid .event-card > div {
@@ -543,11 +546,11 @@ li {
 
 @media (max-width: 1200px) {
   .favorites-grid {
+    grid-template-columns: repeat(2, 1fr);
     gap: 20px;
     max-width: 1000px;
   }
   .favorites-grid .event-card {
-    min-width: 260px;
     max-width: 90vw;
     padding: 1.2em 1.2em 1.2em 1.2em;
   }
@@ -558,13 +561,13 @@ li {
 
 @media (max-width: 800px) {
   .favorites-grid {
+    grid-template-columns: 1fr;
     gap: 12px;
     max-width: 100vw;
   }
   .favorites-grid .event-card {
     flex-direction: column;
     align-items: center;
-    min-width: 90vw;
     max-width: 98vw;
     padding: 1em;
   }

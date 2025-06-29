@@ -268,27 +268,74 @@ li {
 .trending-section ul {
   display: flex;
   flex-wrap: wrap;
-  gap: 24px;
+  gap: 32px;
   justify-content: center;
   padding: 0;
   margin: 0 auto;
-  max-width: 1200px;
+  max-width: 1600px;
 }
 
-.trending-section li.event-card {
-  flex: 1 1 320px;
-  min-width: 320px;
-  max-width: 370px;
+.trending-section .event-card {
+  flex: 1 1 480px;
+  min-width: 340px;
+  max-width: 600px;
   margin: 0;
+  padding: 2em 2em 2em 2em;
+  box-sizing: border-box;
 }
 
-@media (max-width: 900px) {
+.trending-section .event-card > div {
+  flex: 1;
+  padding-left: 2em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.trending-section .event-card h3 {
+  margin: 0 0 0.5em 0;
+  color: #FFD700;
+  font-size: 1.2em;
+}
+
+.trending-section .event-card p {
+  color: #fff;
+  margin: 0 0 0.5em 0;
+  font-size: 1em;
+}
+
+@media (max-width: 1200px) {
   .trending-section ul {
-    gap: 16px;
+    gap: 20px;
+    max-width: 1000px;
   }
-  .trending-section li.event-card {
+  .trending-section .event-card {
     min-width: 260px;
+    max-width: 90vw;
+    padding: 1.2em 1.2em 1.2em 1.2em;
+  }
+  .trending-section .event-card > div {
+    padding-left: 1em;
+  }
+}
+
+@media (max-width: 800px) {
+  .trending-section ul {
+    gap: 12px;
     max-width: 100vw;
+  }
+  .trending-section .event-card {
+    flex-direction: column;
+    align-items: center;
+    min-width: 90vw;
+    max-width: 98vw;
+    padding: 1em;
+  }
+  .trending-section .event-card > div {
+    padding-left: 0;
+    padding-top: 1em;
+    align-items: center;
+    text-align: center;
   }
 }
 
@@ -397,30 +444,4 @@ li {
   border-radius: 8px;
   background: #232323;
   display: block;
-}
-
-.trending-section .event-card {
-  flex-direction: row;
-  align-items: flex-start;
-  min-height: 200px;
-}
-
-.trending-section .event-card > div {
-  flex: 1;
-  padding-left: 1em;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.trending-section .event-card h3 {
-  margin: 0 0 0.5em 0;
-  color: #FFD700;
-  font-size: 1.2em;
-}
-
-.trending-section .event-card p {
-  color: #fff;
-  margin: 0 0 0.5em 0;
-  font-size: 1em;
 }

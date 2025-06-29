@@ -6,8 +6,13 @@ function Home() {
   const [trendingMovies, setTrendingMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [expanded, setExpanded] = useState({});
   const apiKey = "a4cd64db16ded6df2896cccfb552989a";
   const userId = sessionStorage.getItem("user_id");
+
+  const toggleReadMore = (id) => {
+    setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -64,20 +69,38 @@ function Home() {
       <div className="trending-section">
         <h2>Trending Today</h2>
         <ul>
-          {trendingMovies.map((movie) => (
-            <li key={movie.id} className="event-card">
-              <img
-                src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                alt={movie.title}
-                className="event-poster"
-              />
-              <div>
-                <h3>{movie.title}</h3>
-                <p><strong>Release Date:</strong> {movie.release_date}</p>
-                <p style={{ color: '#FFD700' }}>{movie.overview ? movie.overview.slice(0, 120) + (movie.overview.length > 120 ? '...' : '') : 'No description available.'}</p>
-              </div>
-            </li>
-          ))}
+          {trendingMovies.map((movie) => {
+            const isLong = movie.overview && movie.overview.length > 120;
+            const showFull = expanded[movie.id];
+            return (
+              <li key={movie.id} className="event-card">
+                <img
+                  src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                  alt={movie.title}
+                  className="event-poster"
+                />
+                <div>
+                  <h3>{movie.title}</h3>
+                  <p><strong>Release Date:</strong> {movie.release_date}</p>
+                  <p style={{ color: '#FFD700' }}>
+                    {movie.overview
+                      ? showFull
+                        ? movie.overview
+                        : movie.overview.slice(0, 120) + (isLong ? '...' : '')
+                      : 'No description available.'}
+                    {isLong && (
+                      <span
+                        onClick={() => toggleReadMore(movie.id)}
+                        style={{ color: '#00BFFF', cursor: 'pointer', marginLeft: 8, fontWeight: 'bold', fontSize: '0.98em' }}
+                      >
+                        {showFull ? ' Show less' : ' Read more'}
+                      </span>
+                    )}
+                  </p>
+                </div>
+              </li>
+            );
+          })}
         </ul>
       </div>
     </div>

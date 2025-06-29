@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 
 const API_URL = process.env.REACT_APP_API_URL || "";
 
@@ -12,7 +12,6 @@ function Favorites() {
   const [reviewStatus, setReviewStatus] = useState({});
   const apiKey = "a4cd64db16ded6df2896cccfb552989a";
   const userId = sessionStorage.getItem("user_id");
-  const isMounted = useRef(false);
 
   useEffect(() => {
     if (!userId) return;

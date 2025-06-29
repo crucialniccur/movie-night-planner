@@ -5,6 +5,7 @@ const API_URL = process.env.REACT_APP_API_URL || "";
 function Favorites() {
   const [favorites, setFavorites] = useState([]);
   const [movies, setMovies] = useState([]);
+  const [rawMovies, setRawMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [reviewInputs, setReviewInputs] = useState({});
@@ -14,50 +15,58 @@ function Favorites() {
   const isMounted = useRef(false);
 
   useEffect(() => {
-    const fetchFavorites = () => {
-      if (userId) {
-        setLoading(true);
-        fetch(`${API_URL}/api/favorites`, { headers: { "Content-Type": "application/json" }, credentials: "include" })
-          .then((res) => {
-            if (!res.ok) throw new Error("Failed to fetch favorites");
-            return res.json();
-          })
-          .then((data) => {
-            setFavorites(data);
-            return data.map((fav) => fav.movie_id);
-          })
-          .then((movieIds) => {
-            if (movieIds.length > 0) {
-              return Promise.all(
-                movieIds.map((id) =>
-                  fetch(
-                    `https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}`
-                  )
-                    .then((res) => res.json())
-                    .then((movie) => ({
-                      ...movie,
-                      favorite_date: (favorites.find(
-                        (f) => f.movie_id === movie.id
-                      ) || {}).favorite_date,
-                    }))
-                )
-              );
-            }
-            return [];
-          })
-          .then((fetchedMovies) => setMovies(fetchedMovies))
-          .catch((err) => setError(err.message))
-          .finally(() => setLoading(false));
-      }
+    if (!userId) return;
+    setLoading(true);
+    fetch(`${API_URL}/api/favorites`, { headers: { "Content-Type": "application/json" }, credentials: "include" })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch favorites");
+        return res.json();
+      })
+      .then((data) => setFavorites(data))
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+    const handler = () => {
+      setLoading(true);
+      fetch(`${API_URL}/api/favorites`, { headers: { "Content-Type": "application/json" }, credentials: "include" })
+        .then((res) => {
+          if (!res.ok) throw new Error("Failed to fetch favorites");
+          return res.json();
+        })
+        .then((data) => setFavorites(data))
+        .catch((err) => setError(err.message))
+        .finally(() => setLoading(false));
     };
-    if (!isMounted.current) {
-      fetchFavorites();
-      isMounted.current = true;
-    }
-    const handler = () => fetchFavorites();
     window.addEventListener("favorites-updated", handler);
     return () => window.removeEventListener("favorites-updated", handler);
-  }, [userId, apiKey]);
+  }, [userId]);
+
+  useEffect(() => {
+    if (!favorites.length) {
+      setRawMovies([]);
+      return;
+    }
+    const movieIds = favorites.map((fav) => fav.movie_id);
+    Promise.all(
+      movieIds.map((id) =>
+        fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}`)
+          .then((res) => res.json())
+      )
+    )
+      .then((moviesArr) => setRawMovies(moviesArr))
+      .catch((err) => setError(err.message));
+  }, [favorites, apiKey]);
+
+  useEffect(() => {
+    if (!rawMovies.length) {
+      setMovies([]);
+      return;
+    }
+    const merged = rawMovies.map((movie) => {
+      const fav = favorites.find((f) => f.movie_id === movie.id);
+      return { ...movie, favorite_date: fav ? fav.favorite_date : null };
+    });
+    setMovies(merged);
+  }, [rawMovies, favorites]);
 
   const handleRemoveFavorite = (movieId) => {
     fetch(`${API_URL}/api/favorites/${movieId}`, {
@@ -130,7 +139,7 @@ function Favorites() {
               <h3>{movie.title}</h3>
               <p>Release Date: {movie.release_date}</p>
               <p>
-                Favorited: {new Date(movie.favorite_date).toLocaleDateString()}
+                Favorited: {movie.favorite_date ? new Date(movie.favorite_date).toLocaleDateString() : "Not favorited"}
               </p>
               <button onClick={() => handleRemoveFavorite(movie.id)}>
                 Remove from Favorites

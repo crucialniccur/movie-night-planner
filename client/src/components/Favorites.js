@@ -53,7 +53,7 @@ function Favorites() {
     const handler = () => fetchFavorites();
     window.addEventListener("favorites-updated", handler);
     return () => window.removeEventListener("favorites-updated", handler);
-  }, [userId, favorites]);
+  }, [userId]);
 
   const handleRemoveFavorite = (movieId) => {
     fetch(`${API_URL}/api/favorites/${movieId}`, {
@@ -114,7 +114,7 @@ function Favorites() {
   return (
     <div className="container">
       <h1>My Favorites</h1>
-      <ul>
+      <ul className="favorites-grid">
         {movies.map((movie) => (
           <li key={movie.id} className="event-card">
             <img

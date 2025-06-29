@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 const API_URL = process.env.REACT_APP_API_URL || "";
 
@@ -11,6 +11,7 @@ function Favorites() {
   const [reviewStatus, setReviewStatus] = useState({});
   const apiKey = "a4cd64db16ded6df2896cccfb552989a";
   const userId = sessionStorage.getItem("user_id");
+  const isMounted = useRef(false);
 
   useEffect(() => {
     const fetchFavorites = () => {
@@ -35,9 +36,9 @@ function Favorites() {
                     .then((res) => res.json())
                     .then((movie) => ({
                       ...movie,
-                      favorite_date: favorites.find(
+                      favorite_date: (favorites.find(
                         (f) => f.movie_id === movie.id
-                      )?.favorite_date,
+                      ) || {}).favorite_date,
                     }))
                 )
               );
@@ -49,11 +50,14 @@ function Favorites() {
           .finally(() => setLoading(false));
       }
     };
-    fetchFavorites();
+    if (!isMounted.current) {
+      fetchFavorites();
+      isMounted.current = true;
+    }
     const handler = () => fetchFavorites();
     window.addEventListener("favorites-updated", handler);
     return () => window.removeEventListener("favorites-updated", handler);
-  }, [userId]);
+  }, [userId, apiKey]);
 
   const handleRemoveFavorite = (movieId) => {
     fetch(`${API_URL}/api/favorites/${movieId}`, {

@@ -124,49 +124,52 @@ function Favorites() {
     return <div className="container">No favorites yet.</div>;
 
   return (
-    <div className="container">
-      <h1>My Favorites</h1>
-      <div className="favorites-flex-row">
+    <div className="container py-4">
+      <h1 className="mb-4 text-warning fw-bold">My Favorites</h1>
+      <div className="row g-4 justify-content-start">
         {movies.map((movie) => (
-          <div key={movie.id} className="favorite-card">
-            <img
-              src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-              alt={movie.title}
-              className="favorite-poster"
-            />
-            <div className="favorite-card-content">
-              <h3>{movie.title}</h3>
-              <p className="favorite-release"><span>Release:</span> {movie.release_date}</p>
-              <p className="favorite-date"><span>Favorited:</span> {movie.favorite_date ? new Date(movie.favorite_date).toLocaleDateString() : "Not favorited"}</p>
-              <button className="favorite-remove" onClick={() => handleRemoveFavorite(movie.id)}>
-                Remove from Favorites
-              </button>
-              <div className="favorite-review-section">
-                <h4>Leave a Review</h4>
-                <input
-                  type="number"
-                  min="1"
-                  max="5"
-                  placeholder="Rating (1-5)"
-                  value={reviewInputs[movie.id]?.rating || ""}
-                  onChange={e => handleReviewChange(movie.id, "rating", e.target.value)}
-                  className="favorite-review-rating"
-                />
-                <input
-                  type="text"
-                  placeholder="Your review"
-                  value={reviewInputs[movie.id]?.content || ""}
-                  onChange={e => handleReviewChange(movie.id, "content", e.target.value)}
-                  className="favorite-review-input"
-                />
-                <button className="favorite-review-submit" onClick={() => handleReviewSubmit(movie.id)}>
-                  Submit Review
+          <div key={movie.id} className="col-12 col-sm-6 col-lg-4 d-flex">
+            <div className="card shadow-lg flex-fill h-100">
+              <img
+                src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                alt={movie.title}
+                className="card-img-top rounded-top"
+                style={{ objectFit: 'cover', height: '260px' }}
+              />
+              <div className="card-body d-flex flex-column">
+                <h5 className="card-title text-warning fw-bold">{movie.title}</h5>
+                <p className="card-text mb-1"><span className="fw-semibold text-warning">Release:</span> {movie.release_date}</p>
+                <p className="card-text mb-2"><span className="fw-semibold text-warning">Favorited:</span> {movie.favorite_date ? new Date(movie.favorite_date).toLocaleDateString() : "Not favorited"}</p>
+                <button className="btn btn-warning fw-bold mb-3" onClick={() => handleRemoveFavorite(movie.id)}>
+                  Remove from Favorites
                 </button>
-                {reviewStatus[movie.id] && (
-                  <span className={reviewStatus[movie.id] === "Review submitted!" ? "favorite-review-success" : "favorite-review-error"}>
-                    {reviewStatus[movie.id]}
-                  </span>
-                )}
+                <div className="mt-auto">
+                  <h6 className="fw-bold text-warning">Leave a Review</h6>
+                  <input
+                    type="number"
+                    min="1"
+                    max="5"
+                    placeholder="Rating (1-5)"
+                    value={reviewInputs[movie.id]?.rating || ""}
+                    onChange={e => handleReviewChange(movie.id, "rating", e.target.value)}
+                    className="form-control mb-2"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Your review"
+                    value={reviewInputs[movie.id]?.content || ""}
+                    onChange={e => handleReviewChange(movie.id, "content", e.target.value)}
+                    className="form-control mb-2"
+                  />
+                  <button className="btn btn-outline-warning fw-bold" onClick={() => handleReviewSubmit(movie.id)}>
+                    Submit Review
+                  </button>
+                  {reviewStatus[movie.id] && (
+                    <div className={reviewStatus[movie.id] === "Review submitted!" ? "text-success fw-bold mt-2" : "text-danger fw-bold mt-2"}>
+                      {reviewStatus[movie.id]}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>

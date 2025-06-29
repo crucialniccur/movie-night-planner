@@ -35,38 +35,42 @@ function NavBar() {
   }, []);
 
   return (
-    <nav className="navbar horizontal-navbar">
-      <div className="navbar-brand">
-        <span role="img" aria-label="movie">🎬</span> Movie Night
+    <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm mb-4">
+      <div className="container-fluid">
+        <div className="navbar-brand d-flex align-items-center gap-2 fw-bold fs-4 text-warning">
+          <span role="img" aria-label="movie">🎬</span> Movie Night
+        </div>
+        <ul className="navbar-nav ms-auto d-flex flex-row gap-2 align-items-center">
+          <li className="nav-item">
+            <Link to="/" className="nav-link fw-bold text-warning">Home</Link>
+          </li>
+          <li className="nav-item">
+            <Link to="/movies" className="nav-link fw-bold text-warning">Movies</Link>
+          </li>
+          {username ? (
+            <>
+              <li className="nav-item">
+                <span className="nav-link fw-bold text-warning">Hi, {username}!</span>
+              </li>
+              <li className="nav-item">
+                <Link to="/favorites" className="nav-link fw-bold text-warning">Favorites</Link>
+              </li>
+              <li className="nav-item">
+                <Link to="/logout" className="nav-link fw-bold text-warning">Logout</Link>
+              </li>
+            </>
+          ) : (
+            <>
+              <li className="nav-item">
+                <Link to="/login" className="nav-link fw-bold text-warning">Login</Link>
+              </li>
+              <li className="nav-item">
+                <Link to="/signup" className="nav-link fw-bold text-warning">Sign Up</Link>
+              </li>
+            </>
+          )}
+        </ul>
       </div>
-      <ul className="nav-links-horizontal">
-        <li>
-          <Link to="/" className="nav-link">Home</Link>
-        </li>
-        <li>
-          <Link to="/movies" className="nav-link">Movies</Link>
-        </li>
-        {username ? (
-          <>
-            <li className="nav-user">Hi, {username}!</li>
-            <li>
-              <Link to="/favorites" className="nav-link">Favorites</Link>
-            </li>
-            <li>
-              <Link to="/logout" className="nav-link">Logout</Link>
-            </li>
-          </>
-        ) : (
-          <>
-            <li>
-              <Link to="/login" className="nav-link">Login</Link>
-            </li>
-            <li>
-              <Link to="/signup" className="nav-link">Sign Up</Link>
-            </li>
-          </>
-        )}
-      </ul>
     </nav>
   );
 }

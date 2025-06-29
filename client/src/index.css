@@ -1,22 +1,111 @@
 :root {
-  --primary-bg: #1a1a1a; /* Dark charcoal, movie theater vibe */
-  --accent-color: #e50914; /* Netflix-red for buttons */
-  --text-color: #ffffff; /* White for readability */
-  --secondary-bg: #2c2c2c; /* Slightly lighter for cards */
-  --highlight: #ffd700; /* Gold for subtle highlights */
+  --primary-bg: #23272f; /* Dark grey background */
+  --accent-color: #0d6efd; /* Bootstrap blue */
+  --text-color: #f8f9fa; /* Light text */
+  --secondary-bg: #2d323c; /* Medium dark for cards */
+  --card-bg: #323844; /* Slightly lighter for cards */
+  --highlight: #0d6efd; /* Blue for highlights */
 }
 
 body {
   margin: 0;
   font-family: 'Segoe UI', Arial, sans-serif;
-  background: #181818;
-  color: #FFD700;
+  background: linear-gradient(135deg, #23272f 0%, #20232a 60%, #181c23 100%);
+  color: var(--text-color);
   padding: 20px;
   line-height: 1.6;
-  background-image: url("https://source.unsplash.com/random/1920x1080?movie");
-  background-size: cover;
   background-attachment: fixed;
-  background-position: center;
+}
+
+nav, .horizontal-navbar, .navbar, .navbar-brand {
+  background-color: var(--secondary-bg) !important;
+  color: var(--accent-color) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+
+.navbar-brand, .navbar .navbar-brand {
+  color: var(--accent-color) !important;
+}
+
+.navbar-nav .nav-link, .nav-links-horizontal .nav-link, .nav-user {
+  color: var(--accent-color) !important;
+  background: transparent !important;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.navbar-nav .nav-link.active, .navbar-nav .nav-link:hover, .nav-links-horizontal .nav-link:hover {
+  background: var(--accent-color) !important;
+  color: #fff !important;
+}
+
+h1, h2, h3, h4 {
+  color: var(--accent-color);
+}
+
+.container, .container-fluid {
+  background: var(--secondary-bg);
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+  padding: 2em 2em 2em 2em;
+  margin-bottom: 2em;
+}
+
+.card, .favorite-card, .event-card {
+  background: var(--card-bg) !important;
+  color: var(--text-color) !important;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.22);
+}
+
+.card-title, .favorite-card-content h3, .event-card h3 {
+  color: var(--accent-color) !important;
+}
+
+.btn, .btn-warning, .btn-outline-warning, .favorite-remove, .favorite-review-submit {
+  background: var(--accent-color) !important;
+  color: #fff !important;
+  border: none;
+  font-weight: 600;
+  border-radius: 6px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn:hover, .btn-warning:hover, .btn-outline-warning:hover, .favorite-remove:hover, .favorite-review-submit:hover {
+  background: #0a58ca !important;
+  color: #fff !important;
+}
+
+.form-control, .favorite-review-rating, .favorite-review-input {
+  background: #23272f;
+  color: var(--text-color);
+  border: 1px solid #495057;
+}
+
+.reviews-section, .movie-reviews {
+  background: #23272f !important;
+  color: var(--text-color) !important;
+  border-radius: 10px;
+}
+
+.text-warning, .fw-bold.text-warning, .card-title.text-warning {
+  color: var(--accent-color) !important;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  background: #23272f;
+}
+::-webkit-scrollbar-thumb {
+  background: #495057;
+  border-radius: 4px;
+}
+
+@media (max-width: 900px) {
+  .container, .container-fluid {
+    padding: 1em 0.5em 1em 0.5em;
+  }
 }
 
 nav {
@@ -39,7 +128,6 @@ nav a:hover {
 }
 
 h1, h2, h3, h4 {
-  color: #FFD700;
   margin-top: 0.5em;
   margin-bottom: 0.5em;
 }

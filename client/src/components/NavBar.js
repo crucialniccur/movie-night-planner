@@ -5,7 +5,6 @@ const API_URL = process.env.REACT_APP_API_URL || "";
 
 function NavBar() {
   const [username, setUsername] = useState(null);
-  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     // Fetch session info on mount and when login/logout events happen

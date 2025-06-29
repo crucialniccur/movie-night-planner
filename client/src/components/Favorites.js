@@ -126,24 +126,22 @@ function Favorites() {
   return (
     <div className="container">
       <h1>My Favorites</h1>
-      <ul className="favorites-grid">
+      <div className="favorites-flex-row">
         {movies.map((movie) => (
-          <li key={movie.id} className="event-card">
+          <div key={movie.id} className="favorite-card">
             <img
               src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
               alt={movie.title}
-              className="event-poster"
+              className="favorite-poster"
             />
-            <div>
+            <div className="favorite-card-content">
               <h3>{movie.title}</h3>
-              <p>Release Date: {movie.release_date}</p>
-              <p>
-                Favorited: {movie.favorite_date ? new Date(movie.favorite_date).toLocaleDateString() : "Not favorited"}
-              </p>
-              <button onClick={() => handleRemoveFavorite(movie.id)}>
+              <p className="favorite-release"><span>Release:</span> {movie.release_date}</p>
+              <p className="favorite-date"><span>Favorited:</span> {movie.favorite_date ? new Date(movie.favorite_date).toLocaleDateString() : "Not favorited"}</p>
+              <button className="favorite-remove" onClick={() => handleRemoveFavorite(movie.id)}>
                 Remove from Favorites
               </button>
-              <div style={{ marginTop: "1em" }}>
+              <div className="favorite-review-section">
                 <h4>Leave a Review</h4>
                 <input
                   type="number"
@@ -152,28 +150,28 @@ function Favorites() {
                   placeholder="Rating (1-5)"
                   value={reviewInputs[movie.id]?.rating || ""}
                   onChange={e => handleReviewChange(movie.id, "rating", e.target.value)}
-                  style={{ width: "100px", marginRight: "0.5em" }}
+                  className="favorite-review-rating"
                 />
                 <input
                   type="text"
                   placeholder="Your review"
                   value={reviewInputs[movie.id]?.content || ""}
                   onChange={e => handleReviewChange(movie.id, "content", e.target.value)}
-                  style={{ width: "200px", marginRight: "0.5em" }}
+                  className="favorite-review-input"
                 />
-                <button onClick={() => handleReviewSubmit(movie.id)}>
+                <button className="favorite-review-submit" onClick={() => handleReviewSubmit(movie.id)}>
                   Submit Review
                 </button>
                 {reviewStatus[movie.id] && (
-                  <span style={{ marginLeft: "1em", color: reviewStatus[movie.id] === "Review submitted!" ? "green" : "red" }}>
+                  <span className={reviewStatus[movie.id] === "Review submitted!" ? "favorite-review-success" : "favorite-review-error"}>
                     {reviewStatus[movie.id]}
                   </span>
                 )}
               </div>
             </div>
-          </li>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 }

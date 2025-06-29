@@ -445,3 +445,67 @@ li {
   background: #232323;
   display: block;
 }
+
+.horizontal-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #222;
+  color: #FFD700;
+  padding: 0.7em 2em;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 2em;
+  border-radius: 0 0 10px 10px;
+  position: relative;
+  min-height: 60px;
+}
+
+.nav-links-horizontal {
+  display: flex;
+  align-items: center;
+  gap: 1.5em;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links-horizontal .nav-link {
+  margin: 0;
+  padding: 0.5em 1.2em;
+  border-radius: 6px;
+  font-size: 1.08em;
+}
+
+.nav-links-horizontal .nav-link:hover {
+  background: #FFD700;
+  color: #222;
+}
+
+.nav-links-horizontal .nav-user {
+  color: #FFD700;
+  font-weight: bold;
+  margin: 0 0.5em;
+  background: none;
+  padding: 0.5em 1em;
+  border-radius: 6px;
+}
+
+@media (max-width: 800px) {
+  .horizontal-navbar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1em;
+  }
+  .nav-links-horizontal {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    gap: 0.5em;
+  }
+  .nav-links-horizontal .nav-link, .nav-links-horizontal .nav-user {
+    width: 100%;
+    text-align: left;
+    padding: 0.7em 1em;
+    font-size: 1em;
+  }
+}

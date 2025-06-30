@@ -137,6 +137,74 @@ function Favorites() {
       .catch((err) => setReviewStatus((prev) => ({ ...prev, [movieId]: err.message })));
   };
 
+  const handleEditStart = (movieId) => {
+    setReviewInputs((prev) => ({
+      ...prev,
+      [movieId]: {
+        editing: true,
+        rating: userReviews[movieId]?.rating || 1,
+        content: userReviews[movieId]?.content || "",
+      },
+    }));
+    setReviewStatus((prev) => ({ ...prev, [movieId]: null }));
+  };
+
+  const handleEditCancel = (movieId) => {
+    setReviewInputs((prev) => ({ ...prev, [movieId]: {} }));
+    setReviewStatus((prev) => ({ ...prev, [movieId]: null }));
+  };
+
+  const handleReviewEditSave = (movieId, reviewId) => {
+    const input = reviewInputs[movieId] || {};
+    if (!input.rating || !input.content) {
+      setReviewStatus((prev) => ({ ...prev, [movieId]: "Please fill all fields." }));
+      return;
+    }
+    fetch(`${API_URL}/api/reviews/${reviewId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        rating: Number(input.rating),
+        content: input.content,
+      }),
+    })
+      .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
+      .then(({ ok, data }) => {
+        if (!ok) throw new Error(data.error || "Failed to update review");
+        setReviewStatus((prev) => ({ ...prev, [movieId]: "Review updated!" }));
+        setReviewInputs((prev) => ({ ...prev, [movieId]: {} }));
+        // Refresh userReviews
+        fetch(`${API_URL}/api/reviews/movie/${movieId}`)
+          .then((res) => res.json())
+          .then((reviews) => {
+            const userReview = reviews.find(r => String(r.user_id) === String(userId));
+            setUserReviews((prev) => ({ ...prev, [movieId]: userReview }));
+          });
+      })
+      .catch((err) => setReviewStatus((prev) => ({ ...prev, [movieId]: err.message })));
+  };
+
+  const handleReviewDelete = (movieId, reviewId) => {
+    fetch(`${API_URL}/api/reviews/${reviewId}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include"
+    })
+      .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
+      .then(({ ok, data }) => {
+        if (!ok) throw new Error(data.error || "Failed to delete review");
+        setReviewStatus((prev) => ({ ...prev, [movieId]: "Review deleted!" }));
+        setUserReviews((prev) => {
+          const newObj = { ...prev };
+          delete newObj[movieId];
+          return newObj;
+        });
+        setReviewInputs((prev) => ({ ...prev, [movieId]: {} }));
+      })
+      .catch((err) => setReviewStatus((prev) => ({ ...prev, [movieId]: err.message })));
+  };
+
   if (loading) return <div className="container">Loading favorites...</div>;
   if (error) return <div className="container">Error: {error}</div>;
   if (!favorites.length)
@@ -166,8 +234,55 @@ function Favorites() {
                   <h6 className="fw-bold text-warning">Your Review</h6>
                   {userReviews[movie.id] ? (
                     <div>
-                      <span>Rating: {userReviews[movie.id].rating}</span>
-                      <span style={{ marginLeft: 8 }}>{userReviews[movie.id].content}</span>
+                      {reviewInputs[movie.id]?.editing ? (
+                        <>
+                          <input
+                            type="number"
+                            min="1"
+                            max="5"
+                            placeholder="Rating (1-5)"
+                            value={reviewInputs[movie.id]?.rating || userReviews[movie.id].rating}
+                            onChange={e => handleReviewChange(movie.id, "rating", e.target.value)}
+                            className="form-control mb-2"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Your review"
+                            value={reviewInputs[movie.id]?.content || userReviews[movie.id].content}
+                            onChange={e => handleReviewChange(movie.id, "content", e.target.value)}
+                            className="form-control mb-2"
+                          />
+                          <button className="btn btn-outline-success fw-bold me-2" onClick={() => handleReviewEditSave(movie.id, userReviews[movie.id].id)}>
+                            Save
+                          </button>
+                          <button className="btn btn-outline-secondary fw-bold" onClick={() => handleEditCancel(movie.id)}>
+                            Cancel
+                          </button>
+                          {reviewStatus[movie.id] && (
+                            <div className={reviewStatus[movie.id] === "Review updated!" ? "text-success fw-bold mt-2" : "text-danger fw-bold mt-2"}>
+                              {reviewStatus[movie.id]}
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          <span>Rating: {userReviews[movie.id].rating}</span>
+                          <span style={{ marginLeft: 8 }}>{userReviews[movie.id].content}</span>
+                          <div className="mt-2">
+                            <button className="btn btn-outline-warning fw-bold me-2" onClick={() => handleEditStart(movie.id)}>
+                              Edit
+                            </button>
+                            <button className="btn btn-outline-danger fw-bold" onClick={() => handleReviewDelete(movie.id, userReviews[movie.id].id)}>
+                              Delete
+                            </button>
+                          </div>
+                          {reviewStatus[movie.id] && (
+                            <div className={reviewStatus[movie.id] === "Review deleted!" ? "text-success fw-bold mt-2" : "text-danger fw-bold mt-2"}>
+                              {reviewStatus[movie.id]}
+                            </div>
+                          )}
+                        </>
+                      )}
                     </div>
                   ) : (
                     <>

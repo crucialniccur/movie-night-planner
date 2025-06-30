@@ -10,6 +10,7 @@ function Favorites() {
   const [error, setError] = useState(null);
   const [reviewInputs, setReviewInputs] = useState({});
   const [reviewStatus, setReviewStatus] = useState({});
+  const [userReviews, setUserReviews] = useState({});
   const apiKey = "a4cd64db16ded6df2896cccfb552989a";
   const userId = sessionStorage.getItem("user_id");
 
@@ -66,6 +67,24 @@ function Favorites() {
     });
     setMovies(merged);
   }, [rawMovies, favorites]);
+
+  useEffect(() => {
+    async function fetchUserReviews() {
+      const reviewsObj = {};
+      for (let movie of movies) {
+        try {
+          const res = await fetch(`${API_URL}/api/reviews/movie/${movie.id}`);
+          if (res.ok) {
+            const reviews = await res.json();
+            const userReview = reviews.find(r => String(r.user_id) === String(userId));
+            if (userReview) reviewsObj[movie.id] = userReview;
+          }
+        } catch {}
+      }
+      setUserReviews(reviewsObj);
+    }
+    if (movies.length > 0 && userId) fetchUserReviews();
+  }, [movies, userId]);
 
   const handleRemoveFavorite = (movieId) => {
     fetch(`${API_URL}/api/favorites/${movieId}`, {
@@ -144,30 +163,39 @@ function Favorites() {
                   Remove from Favorites
                 </button>
                 <div className="mt-auto">
-                  <h6 className="fw-bold text-warning">Leave a Review</h6>
-                  <input
-                    type="number"
-                    min="1"
-                    max="5"
-                    placeholder="Rating (1-5)"
-                    value={reviewInputs[movie.id]?.rating || ""}
-                    onChange={e => handleReviewChange(movie.id, "rating", e.target.value)}
-                    className="form-control mb-2"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Your review"
-                    value={reviewInputs[movie.id]?.content || ""}
-                    onChange={e => handleReviewChange(movie.id, "content", e.target.value)}
-                    className="form-control mb-2"
-                  />
-                  <button className="btn btn-outline-warning fw-bold" onClick={() => handleReviewSubmit(movie.id)}>
-                    Submit Review
-                  </button>
-                  {reviewStatus[movie.id] && (
-                    <div className={reviewStatus[movie.id] === "Review submitted!" ? "text-success fw-bold mt-2" : "text-danger fw-bold mt-2"}>
-                      {reviewStatus[movie.id]}
+                  <h6 className="fw-bold text-warning">Your Review</h6>
+                  {userReviews[movie.id] ? (
+                    <div>
+                      <span>Rating: {userReviews[movie.id].rating}</span>
+                      <span style={{ marginLeft: 8 }}>{userReviews[movie.id].content}</span>
                     </div>
+                  ) : (
+                    <>
+                      <input
+                        type="number"
+                        min="1"
+                        max="5"
+                        placeholder="Rating (1-5)"
+                        value={reviewInputs[movie.id]?.rating || ""}
+                        onChange={e => handleReviewChange(movie.id, "rating", e.target.value)}
+                        className="form-control mb-2"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Your review"
+                        value={reviewInputs[movie.id]?.content || ""}
+                        onChange={e => handleReviewChange(movie.id, "content", e.target.value)}
+                        className="form-control mb-2"
+                      />
+                      <button className="btn btn-outline-warning fw-bold" onClick={() => handleReviewSubmit(movie.id)}>
+                        Submit Review
+                      </button>
+                      {reviewStatus[movie.id] && (
+                        <div className={reviewStatus[movie.id] === "Review submitted!" ? "text-success fw-bold mt-2" : "text-danger fw-bold mt-2"}>
+                          {reviewStatus[movie.id]}
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               </div>

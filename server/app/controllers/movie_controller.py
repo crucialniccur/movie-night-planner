@@ -87,6 +87,21 @@ class ReviewList(Resource):
         db.session.commit()
         return {'message': 'Review deleted'}, 200
 
+    @login_required
+    def patch(self, review_id):
+        data = request.get_json()
+        review = Review.query.get_or_404(review_id)
+        if review.user_id != session.get('user_id'):
+            return {'error': 'Unauthorized'}, 403
+        if data is not None:
+            if 'content' in data:
+                review.content = data['content']
+            if 'rating' in data:
+                review.rating = data['rating']
+            db.session.commit()
+            return review.to_dict(), 200
+        return {'error': 'No data provided'}, 400
+
 class ReviewByMovie(Resource):
     def get(self, movie_id):
         reviews = Review.query.filter_by(movie_id=movie_id).all()

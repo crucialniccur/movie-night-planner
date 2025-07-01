@@ -236,16 +236,23 @@ function Home() {
                         </span>
                       )}
                     </p>
-                    <div className="reviews-section card bg-dark text-light p-3 mt-auto">
-                      <h6 className="fw-bold text-warning">Reviews:</h6>
+                    <div className="reviews-section">
+                      <h6 className="fw-bold" style={{ color: '#007aff' }}>Reviews:</h6>
                       {reviewsByMovie[movie.id] && reviewsByMovie[movie.id].length > 0 ? (
-                        <ul className="mb-0">
-                          {reviewsByMovie[movie.id].map((review) => (
-                            <li key={review.id}>
-                              <strong>User {review.user_id}:</strong> {review.content} (Rating: {review.rating})
-                            </li>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                          {reviewsByMovie[movie.id].map((review, idx, arr) => (
+                            <>
+                              <div key={review.id} className="review-pill">
+                                <span style={{ fontWeight: 600 }}>User {review.user_id}</span>
+                                <span className="review-rating">{review.rating}★</span>
+                                <span style={{ marginLeft: 8 }}>{review.content}</span>
+                              </div>
+                              {idx < arr.length - 1 && (
+                                <div style={{ height: 1, background: '#e5e5ea', margin: '2px 0 4px 0', width: '90%', alignSelf: 'center', borderRadius: 1 }} />
+                              )}
+                            </>
                           ))}
-                        </ul>
+                        </div>
                       ) : (
                         <p className="mb-0">No reviews yet.</p>
                       )}

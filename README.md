@@ -1,10 +1,12 @@
-# Movie Night Planner
+te # Movie Night Planner
 
 [Live Demo on Netlify](https://matis-movie-planner.netlify.app/)
 
 ## Overview
 
 Movie Night Planner is a full-stack web application that helps users discover trending movies, save their favorites, and share reviews. The app features user authentication, favorites management, and a modern, responsive UI built with React and Bootstrap.
+
+**Now featuring a clean, light, Apple-inspired theme and improved user experience!**
 
 ---
 
@@ -13,10 +15,33 @@ Movie Night Planner is a full-stack web application that helps users discover tr
 - User signup, login, and logout
 - Browse trending and popular movies (powered by TMDB API)
 - Favorite/unfavorite movies
-- Leave and view reviews for favorited movies
+- Leave, edit, and delete reviews for favorited movies
 - Responsive, mobile-friendly design using Bootstrap
 - Session-based authentication (secure, cross-origin)
+- Modern, visually appealing UI with a light theme
 - Deployed frontend (Netlify) and backend (Render)
+
+---
+
+## API Endpoints & CRUD Operations
+
+### Reviews
+- **Create:** `POST /api/reviews` — Add a new review for a movie
+- **Read:** `GET /api/reviews/movie/<movie_id>` — Get all reviews for a movie
+- **Update:** `PATCH /api/reviews/<review_id>` — Edit a review
+- **Delete:** `DELETE /api/reviews/<review_id>` — Delete a review
+
+### Favorites
+- **Create:** `POST /api/favorites/<movie_id>` — Add a movie to favorites
+- **Read:** `GET /api/favorites` — List user favorites
+- **Delete:** `DELETE /api/favorites/<movie_id>` — Remove a movie from favorites
+
+### Users
+- **Create:** `POST /api/signup` — Register a new user
+- **Read:** `GET /check-session` — Get current user info
+
+### Movies
+- **Read:** Movies are fetched from the TMDB API (external)
 
 ---
 

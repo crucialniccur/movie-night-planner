@@ -144,12 +144,6 @@ npm start
 
 ---
 
-## Screenshots
-
-> Add screenshots of the Home, Movies, and Favorites pages here for a visual overview.
-
----
-
 ## Credits
 
 - Movie data from [TMDB API](https://www.themoviedb.org/documentation/api)

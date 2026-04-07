@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
+
+const API_URL = process.env.REACT_APP_API_URL || "";
 
 function Movies() {
   const [movies, setMovies] = useState([]);
@@ -14,16 +16,22 @@ function Movies() {
   const apiKey = "a4cd64db16ded6df2896cccfb552989a";
   const userId = sessionStorage.getItem("user_id");
 
-  const fetchFavorites = () => {
-    if (userId) {
-      fetch("/favorites")
-        .then((res) => res.json())
-        .then((data) => setFavorites(data.map((f) => f.movie_id)))
-        .catch((err) => console.error("Error fetching favorites:", err));
-    }
-  };
-
   useEffect(() => {
+    const fetchFavorites = () => {
+      if (userId) {
+        fetch(`${API_URL}/api/favorites`, { credentials: "include" })
+          .then((res) => res.json())
+          .then((data) => {
+            if (!Array.isArray(data)) return [];
+            return data.map((f) => f.movie_id);
+          })
+          .then((ids) => setFavorites(ids))
+          .catch((err) => {
+            setFavorites([]);
+            console.error("Error fetching favorites:", err);
+          });
+      }
+    };
     setLoading(true);
     setError(null);
     fetch(
@@ -46,7 +54,7 @@ function Movies() {
     async function fetchReviews() {
       const reviewsObj = {};
       for (let movie of movies) {
-        const res = await fetch(`/reviews/${movie.id}`);
+        const res = await fetch(`${API_URL}/api/reviews/movie/${movie.id}`);
         reviewsObj[movie.id] = res.ok ? await res.json() : [];
       }
       setReviewsByMovie(reviewsObj);
@@ -59,19 +67,18 @@ function Movies() {
 
   const handleFavorite = (movieId) => {
     if (favLoading[movieId]) return;
-    setFavLoading({ ...favLoading, [movieId]: true });
     const isFav = favorites.includes(movieId);
-    fetch(`/favorite/${movieId}`, {
-      method: isFav ? "DELETE" : "POST",
+    if (isFav) return;
+    setFavLoading({ ...favLoading, [movieId]: true });
+    fetch(`${API_URL}/api/favorites/${movieId}`, {
+      method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include"
     })
       .then((res) => res.json())
       .then((data) => {
-        if (
-          data.message === "Movie favorited" ||
-          data.message === "Movie removed from favorites"
-        ) {
-          fetchFavorites();
+        if (data.id || data.message === "Movie favorited") {
+          setFavorites((prev) => [...prev, movieId]);
           notifyFavoritesUpdate();
         }
       })
@@ -96,9 +103,10 @@ function Movies() {
       return;
     }
     setReviewError({ ...reviewError, [movieId]: null });
-    fetch("/reviews", {
+    fetch(`${API_URL}/api/reviews`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({
         content: reviewContent[movieId] || "",
         rating: reviewRating[movieId] || 1,
@@ -112,7 +120,7 @@ function Movies() {
         else {
           setReviewContent({ ...reviewContent, [movieId]: "" });
           setReviewRating({ ...reviewRating, [movieId]: 1 });
-          fetch(`/reviews/${movieId}`)
+          fetch(`${API_URL}/api/reviews/movie/${movieId}`)
             .then((res) => res.json())
             .then((reviews) =>
               setReviewsByMovie({ ...reviewsByMovie, [movieId]: reviews })
@@ -128,87 +136,90 @@ function Movies() {
   if (error) return <div className="container">Error: {error}</div>;
 
   return (
-    <div className="container">
-      <h1>Movies</h1>
-      <ul>
+    <div className="container py-4">
+      <h1 className="mb-4">Movies</h1>
+      <div className="row g-4 justify-content-start">
         {movies.map((movie) => {
           const isFav = favorites.includes(movie.id);
           return (
-            <li key={movie.id} className="event-card">
-              <img
-                src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                alt={movie.title}
-                className="event-poster"
-              />
-              <div>
-                <h3>{movie.title}</h3>
-                <p>{movie.release_date}</p>
-                {userId && (
-                  <button
-                    onClick={() => handleFavorite(movie.id)}
-                    disabled={favLoading[movie.id]}
-                    className={
-                      isFav ? "favorite-button favorited" : "favorite-button"
-                    }
-                  >
-                    {isFav ? "Favorited ✓" : "Favorite"}
-                  </button>
-                )}
-                <div className="reviews-section">
-                  <h4>Reviews:</h4>
-                  {reviewsByMovie[movie.id] &&
-                  reviewsByMovie[movie.id].length > 0 ? (
-                    <ul>
-                      {reviewsByMovie[movie.id].map((review) => (
-                        <li key={review.id}>
-                          <strong>User {review.user_id}:</strong>{" "}
-                          {review.content} (Rating: {review.rating})
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p>No reviews yet.</p>
+            <div key={movie.id} className="col-12 col-md-6 d-flex">
+              <div className="card shadow-lg flex-fill h-100">
+                <img
+                  src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                  alt={movie.title}
+                  className="card-img-top rounded-top"
+                  style={{ objectFit: 'cover', height: '260px' }}
+                />
+                <div className="card-body d-flex flex-column">
+                  <h5 className="card-title text-warning fw-bold">{movie.title}</h5>
+                  <p className="card-text mb-1">{movie.release_date}</p>
+                  {userId && (
+                    <button
+                      onClick={() => handleFavorite(movie.id)}
+                      disabled={isFav || favLoading[movie.id]}
+                      className={`btn fw-bold mb-3 ${isFav ? 'btn-secondary' : 'btn-warning'}`}
+                    >
+                      {isFav ? "Favorited ✓" : "Favorite"}
+                    </button>
+                  )}
+                  <div className="reviews-section card bg-dark text-light p-3 mt-auto">
+                    <h6 className="fw-bold text-warning">Reviews:</h6>
+                    {reviewsByMovie[movie.id] &&
+                    reviewsByMovie[movie.id].length > 0 ? (
+                      <ul className="mb-0">
+                        {reviewsByMovie[movie.id].map((review) => (
+                          <li key={review.id}>
+                            <strong>User {review.user_id}:</strong>{" "}
+                            {review.content} (Rating: {review.rating})
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="mb-0">No reviews yet.</p>
+                    )}
+                  </div>
+                  {userId && isFav && (
+                    <form
+                      onSubmit={(e) => handleReviewSubmit(e, movie.id)}
+                      className="review-form mt-3"
+                    >
+                      <h6 className="fw-bold text-warning">Leave a Review</h6>
+                      <textarea
+                        value={reviewContent[movie.id] || ""}
+                        onChange={(e) => handleReviewChange(movie.id, "content", e.target.value)}
+                        placeholder="Write your review"
+                        required
+                        className="form-control mb-2"
+                      />
+                      <input
+                        type="number"
+                        value={reviewRating[movie.id] || 1}
+                        onChange={(e) =>
+                          handleReviewChange(
+                            movie.id,
+                            "rating",
+                            Math.max(1, Math.min(5, e.target.value))
+                          )
+                        }
+                        min="1"
+                        max="5"
+                        required
+                        className="form-control mb-2"
+                      />
+                      <button type="submit" className="btn btn-outline-warning fw-bold">
+                        Submit Review
+                      </button>
+                      {reviewError[movie.id] && (
+                        <p className="text-danger fw-bold mt-2">{reviewError[movie.id]}</p>
+                      )}
+                    </form>
                   )}
                 </div>
-                {userId && isFav && (
-                  <form
-                    onSubmit={(e) => handleReviewSubmit(e, movie.id)}
-                    className="review-form"
-                  >
-                    <h4>Leave a Review</h4>
-                    <textarea
-                      value={reviewContent[movie.id] || ""}
-                      onChange={(e) =>
-                        handleReviewChange(movie.id, "content", e.target.value)
-                      }
-                      placeholder="Write your review"
-                      required
-                    />
-                    <input
-                      type="number"
-                      value={reviewRating[movie.id] || 1}
-                      onChange={(e) =>
-                        handleReviewChange(
-                          movie.id,
-                          "rating",
-                          Math.max(1, Math.min(5, e.target.value))
-                        )
-                      }
-                      min="1"
-                      max="5"
-                      required
-                    />
-                    <button type="submit">Submit Review</button>
-                    {reviewError[movie.id] && (
-                      <p style={{ color: "red" }}>{reviewError[movie.id]}</p>
-                    )}
-                  </form>
-                )}
               </div>
-            </li>
+            </div>
           );
         })}
-      </ul>
+      </div>
     </div>
   );
 }

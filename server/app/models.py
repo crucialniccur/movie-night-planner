@@ -1,5 +1,5 @@
 from sqlalchemy_serializer import SerializerMixin
-from config import db, bcrypt
+from . import db, bcrypt
 from sqlalchemy import CheckConstraint
 
 
@@ -28,7 +28,7 @@ class Event(db.Model, SerializerMixin):
     date = db.Column(db.DateTime, nullable=False)
     image_url = db.Column(db.String(255))
     users = db.relationship('UserEvent', backref='event', lazy=True)
-    serialize_rules = ('-users.event')
+    serialize_rules = ('-users.event',)
 
 
 class Review(db.Model, SerializerMixin):

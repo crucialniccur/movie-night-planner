@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 const API_URL = process.env.REACT_APP_API_URL || "";
 
-function Login() {
+function Signup() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -11,7 +11,7 @@ function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    fetch(`${API_URL}/api/login`, {
+    fetch(`${API_URL}/api/users`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -19,7 +19,7 @@ function Login() {
     })
       .then((res) => res.json().then(data => ({ ok: res.ok, data })))
       .then(({ ok, data }) => {
-        if (!ok) throw new Error(data.error || "Login failed");
+        if (!ok) throw new Error(data.error || "Signup failed");
         if (data.id) {
           sessionStorage.setItem("user_id", data.id); // Store user_id
           window.dispatchEvent(new Event("login"));
@@ -33,7 +33,7 @@ function Login() {
 
   return (
     <div className="container">
-      <h1>Login</h1>
+      <h1>Sign Up</h1>
       {error && <p style={{ color: "red" }}>{error}</p>}
       <form onSubmit={handleSubmit}>
         <input
@@ -50,10 +50,10 @@ function Login() {
           placeholder="Password"
           required
         />
-        <button type="submit">Login</button>
+        <button type="submit">Sign Up</button>
       </form>
     </div>
   );
 }
 
-export default Login;
+export default Signup;

@@ -5,11 +5,8 @@ import Home from "./Home";
 import Login from "./Login";
 import Logout from "./Logout";
 import Favorites from "./Favorites";
-import Movies from "./Movies"; // Re-import Movies
-
-function ErrorPage({ children }) {
-  return <div className="error">{children}</div>;
-}
+import Movies from "./Movies";
+import Signup from "./Signup";
 
 function App() {
   return (
@@ -20,7 +17,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/logout" element={<Logout />} />
         <Route path="/favorites" element={<Favorites />} />
-        <Route path="/movies" element={<Movies />} /> {/* Re-add this route */}
+        <Route path="/movies" element={<Movies />} />
+        <Route path="/signup" element={<Signup />} />
       </Routes>
     </Router>
   );

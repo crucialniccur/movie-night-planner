@@ -1,56 +1,69 @@
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+
+const API_URL = process.env.REACT_APP_API_URL || "";
 
 function NavBar() {
-  const userId = sessionStorage.getItem("user_id");
+  const [username, setUsername] = useState(null);
+
+  useEffect(() => {
+    // Fetch session info on mount and when login/logout events happen
+    const fetchSession = () => {
+      fetch(`${API_URL}/check-session`, { credentials: "include" })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.user_id && data.username) {
+            setUsername(data.username);
+            sessionStorage.setItem("user_id", data.user_id);
+          } else {
+            setUsername(null);
+            sessionStorage.removeItem("user_id");
+          }
+        })
+        .catch(() => {
+          setUsername(null);
+          sessionStorage.removeItem("user_id");
+        });
+    };
+    fetchSession();
+    window.addEventListener("login", fetchSession);
+    window.addEventListener("logout", fetchSession);
+    return () => {
+      window.removeEventListener("login", fetchSession);
+      window.removeEventListener("logout", fetchSession);
+    };
+  }, []);
 
   return (
-    <nav
-      className="navbar"
-      style={{
-        background: "#222",
-        color: "#FFD700",
-        padding: "0.7em 2em",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-        marginBottom: "2em",
-      }}
-    >
-      <div style={{ fontWeight: "bold", fontSize: "1.5em", color: "#FFD700", letterSpacing: "1px" }}>
-        <span role="img" aria-label="movie">🎬</span> Movie Night
-      </div>
-      <ul
-        style={{
-          listStyle: "none",
-          display: "flex",
-          gap: "1.5em",
-          margin: 0,
-          padding: 0,
-          alignItems: "center",
-        }}
-      >
-        <li>
-          <Link to="/" style={{ color: "#FFD700", textDecoration: "none", fontWeight: "bold" }}>Home</Link>
-        </li>
-        <li>
-          <Link to="/movies" style={{ color: "#FFD700", textDecoration: "none", fontWeight: "bold" }}>Movies</Link>
-        </li>
-        {userId ? (
-          <>
-            <li>
-              <Link to="/favorites" style={{ color: "#FFD700", textDecoration: "none", fontWeight: "bold" }}>Favorites</Link>
-            </li>
-            <li>
-              <Link to="/logout" style={{ color: "#FFD700", textDecoration: "none", fontWeight: "bold" }}>Logout</Link>
-            </li>
-          </>
-        ) : (
-          <li>
-            <Link to="/login" style={{ color: "#FFD700", textDecoration: "none", fontWeight: "bold" }}>Login</Link>
+    <nav className="navbar navbar-expand-lg">
+      <div className="container-fluid" style={{ display: 'flex', alignItems: 'center', padding: '0.5rem 2.5rem' }}>
+        <div className="navbar-brand" style={{ marginRight: '2.5rem' }}>
+          <span role="img" aria-label="movie">🎬</span> Movie Night
+        </div>
+        <ul className="navbar-nav" style={{ display: 'flex', flexDirection: 'row', gap: '2.2em', marginBottom: 0 }}>
+          <li className="nav-item">
+            <Link to="/" className="nav-link">Home</Link>
           </li>
+          <li className="nav-item">
+            <Link to="/movies" className="nav-link">Movies</Link>
+          </li>
+          <li className="nav-item">
+            <Link to="/favorites" className="nav-link">Favorites</Link>
+          </li>
+        </ul>
+        {username && (
+          <div style={{ display: 'flex', alignItems: 'center', marginLeft: 'auto', gap: '1.5em' }}>
+            <span className="nav-link" style={{ padding: 0, fontWeight: 600 }}>Hi, {username}!</span>
+            <Link to="/logout" className="nav-link">Logout</Link>
+          </div>
         )}
-      </ul>
+        {!username && (
+          <div style={{ display: 'flex', alignItems: 'center', marginLeft: 'auto', gap: '1.5em' }}>
+            <Link to="/login" className="nav-link">Login</Link>
+            <Link to="/signup" className="nav-link">Sign Up</Link>
+          </div>
+        )}
+      </div>
     </nav>
   );
 }
